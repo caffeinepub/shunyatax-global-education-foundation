@@ -1,0 +1,69 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-fix-the-broken-admin-login-redirect-so-that-when-an-already-authenticated-admin-visits-admin-the-app-redirects-to-the-actual-admin-dashboard-route-under-admin-panel-dashboard-not-admin-dashboard",
+      "featureTitle": "Fix the broken admin login redirect so that when an already-authenticated admin visits `/admin`, the app redirects to the actual admin dashboard route under `/admin-panel/dashboard` (not `/admin/dashboard`).",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "authorization@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-make-admin-panel-access-functional-with-the-backend-by-protecting-admin-panel-using-internet-identity-backend-admin-role-checks-instead-of-only-the-current-sessionstorage-hardcoded-credential-gate-so-authenticated-admins-can-actually-manage-programs-events-team-impact-donations-contacts-without-authorization-traps",
+      "featureTitle": "Make admin panel access functional with the backend by protecting `/admin-panel/*` using Internet Identity + backend admin role checks (instead of only the current sessionStorage/hardcoded credential gate), so authenticated admins can actually manage programs/events/team/impact/donations/contacts without authorization traps.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/admin/AdminLayout.tsx",
+        "frontend/src/hooks/useAdminAccess.ts",
+        "frontend/src/pages/admin/AdminLogin.tsx",
+        "frontend/src/utils/authorizationErrors.ts"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "authorization@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-backend-supported-way-to-grant-admin-rights-to-the-email-nikhil44soni7-gmail-com-add-a-mechanism-to-associate-an-email-address-with-an-internet-identity-principal-and-add-an-admin-only-backend-method-to-assign-the-admin-role-by-email-once-that-email-has-been-registered-associated",
+      "featureTitle": "Implement a backend-supported way to grant admin rights to the email `nikhil44soni7@gmail.com`: add a mechanism to associate an email address with an Internet Identity principal, and add an admin-only backend method to assign the `#admin` role by email once that email has been registered/associated.",
+      "files": [
+        "frontend/src/components/admin/AdminLayout.tsx",
+        "frontend/src/hooks/useAdminRoleManagement.ts",
+        "frontend/src/pages/admin/AdminDashboard.tsx",
+        "frontend/src/pages/admin/AdminLogin.tsx"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "authorization@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

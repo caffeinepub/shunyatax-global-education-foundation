@@ -1,0 +1,74 @@
+{
+  "kind": "build_request",
+  "title": "Fix admin panel access and grant admin rights to a specific email",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Fix the broken admin login redirect so that when an already-authenticated admin visits `/admin`, the app redirects to the actual admin dashboard route under `/admin-panel/dashboard` (not `/admin/dashboard`).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Fix admin panel login access"
+        ]
+      },
+      "acceptanceCriteria": [
+        "If `sessionStorage.adminAuthenticated` is valid, visiting `/admin` redirects to `/admin-panel/dashboard`.",
+        "No route attempts to navigate to `/admin/dashboard`."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Make admin panel access functional with the backend by protecting `/admin-panel/*` using Internet Identity + backend admin role checks (instead of only the current sessionStorage/hardcoded credential gate), so authenticated admins can actually manage programs/events/team/impact/donations/contacts without authorization traps.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Fix admin panel login access"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A user who is not authenticated with Internet Identity cannot use `/admin-panel/*` to perform backend admin mutations; they are shown a clear English message and a path to authenticate.",
+        "A user authenticated with Internet Identity but without admin role is blocked from `/admin-panel/*` actions with a clear English message (not a cryptic crash).",
+        "A user authenticated with Internet Identity and having admin role can load `/admin-panel/dashboard` and successfully perform at least one admin CRUD action (e.g., create/update/delete a Program or Event) without backend authorization errors."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement a backend-supported way to grant admin rights to the email `nikhil44soni7@gmail.com`: add a mechanism to associate an email address with an Internet Identity principal, and add an admin-only backend method to assign the `#admin` role by email once that email has been registered/associated.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-20"
+        ],
+        "quotes": [
+          "Give admin rights to a specific email"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend supports saving/associating an email address to the caller’s principal.",
+        "Backend exposes an admin-only function that assigns admin role to the principal associated with `nikhil44soni7@gmail.com`.",
+        "From the UI, an existing admin can grant admin rights to `nikhil44soni7@gmail.com` and that user (after logging in with Internet Identity tied to that email association) is recognized as admin by `getCallerUserRole()`/`isCallerAdmin()`."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single-actor Motoko canister with all logic in `backend/main.mo`.",
+    "Do not edit any files under `frontend/src/components/ui`.",
+    "Do not edit files listed in `frontend.immutablePaths` in SYSTEM_CONTEXT."
+  ],
+  "nonGoals": [
+    "Do not implement third-party authentication providers (only Internet Identity is allowed).",
+    "Do not build a full public-site email/password authentication system beyond what is required to grant admin by email.",
+    "Do not implement gallery management features (control/admin gallery CRUD) as part of this request."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
