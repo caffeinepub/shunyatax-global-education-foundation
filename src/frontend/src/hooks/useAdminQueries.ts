@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { Program, TeamMember, ImpactStory, ContactForm, Donation, Event, ExternalBlob } from '../backend';
+import type { Program, TeamMember, ImpactStory, ContactForm, Donation, Event, ExternalBlob, GalleryItem } from '../backend';
 
 export function useAdminQueries() {
   const { actor, isFetching } = useActor();
@@ -135,14 +135,14 @@ export function useAdminQueries() {
     });
   };
 
-  // Team Members
+  // Team Members - Admin listing (includes hidden members)
   const useGetAllTeamMembers = () => {
     return useQuery<TeamMember[]>({
       queryKey: ['admin-team'],
       queryFn: async () => {
         try {
           if (!actor) return [];
-          const result = await actor.getAllTeamMembers();
+          const result = await actor.getAllTeamMembersAdmin();
           return result || [];
         } catch (error) {
           console.error('Error fetching admin team members:', error);
@@ -262,14 +262,14 @@ export function useAdminQueries() {
     });
   };
 
-  // Impact Stories
+  // Impact Stories - Admin listing (includes drafts/unpublished)
   const useGetAllImpactStories = () => {
     return useQuery<ImpactStory[]>({
       queryKey: ['admin-impact-stories'],
       queryFn: async () => {
         try {
           if (!actor) return [];
-          const result = await actor.getAllImpactStories();
+          const result = await actor.getAllImpactStoriesAdmin();
           return result || [];
         } catch (error) {
           console.error('Error fetching admin impact stories:', error);
@@ -506,6 +506,132 @@ export function useAdminQueries() {
     });
   };
 
+  // Gallery Management - Admin listing (includes hidden items)
+  const useGetAllGalleryItems = () => {
+    return useQuery<GalleryItem[]>({
+      queryKey: ['admin-gallery'],
+      queryFn: async () => {
+        try {
+          if (!actor) return [];
+          const result = await actor.getAllGalleryItemsAdmin();
+          return result || [];
+        } catch (error) {
+          console.error('Error fetching admin gallery items:', error);
+          return [];
+        }
+      },
+      enabled: !!actor && !isFetching,
+      retry: 2,
+      retryDelay: 1000,
+    });
+  };
+
+  const useAddGalleryItem = () => {
+    return useMutation({
+      mutationFn: async (data: {
+        title: string;
+        altText: string;
+        category: string;
+        image: ExternalBlob;
+        displayOrder: bigint;
+      }) => {
+        try {
+          if (!actor) throw new Error('Actor not initialized');
+          if (!data.title || !data.altText || !data.category || !data.image) {
+            throw new Error('All fields are required');
+          }
+          const result = await actor.addGalleryItem(
+            data.title,
+            data.altText,
+            data.category,
+            data.image,
+            data.displayOrder || BigInt(0)
+          );
+          return result;
+        } catch (error) {
+          console.error('Error adding gallery item:', error);
+          throw error;
+        }
+      },
+      onSuccess: () => {
+        try {
+          queryClient.invalidateQueries({ queryKey: ['admin-gallery'] });
+          queryClient.invalidateQueries({ queryKey: ['gallery'] });
+        } catch (error) {
+          console.error('Error invalidating gallery cache:', error);
+        }
+      },
+      retry: 1,
+    });
+  };
+
+  const useUpdateGalleryItem = () => {
+    return useMutation({
+      mutationFn: async (data: {
+        id: bigint;
+        title: string;
+        altText: string;
+        category: string;
+        image: ExternalBlob;
+        displayOrder: bigint;
+        visible: boolean;
+      }) => {
+        try {
+          if (!actor) throw new Error('Actor not initialized');
+          if (!data.title || !data.altText || !data.category || !data.image) {
+            throw new Error('All fields are required');
+          }
+          const result = await actor.updateGalleryItem(
+            data.id,
+            data.title,
+            data.altText,
+            data.category,
+            data.image,
+            data.displayOrder || BigInt(0),
+            data.visible !== false
+          );
+          return result;
+        } catch (error) {
+          console.error('Error updating gallery item:', error);
+          throw error;
+        }
+      },
+      onSuccess: () => {
+        try {
+          queryClient.invalidateQueries({ queryKey: ['admin-gallery'] });
+          queryClient.invalidateQueries({ queryKey: ['gallery'] });
+        } catch (error) {
+          console.error('Error invalidating gallery cache:', error);
+        }
+      },
+      retry: 1,
+    });
+  };
+
+  const useDeleteGalleryItem = () => {
+    return useMutation({
+      mutationFn: async (id: bigint) => {
+        try {
+          if (!actor) throw new Error('Actor not initialized');
+          const result = await actor.deleteGalleryItem(id);
+          return result;
+        } catch (error) {
+          console.error('Error deleting gallery item:', error);
+          throw error;
+        }
+      },
+      onSuccess: () => {
+        try {
+          queryClient.invalidateQueries({ queryKey: ['admin-gallery'] });
+          queryClient.invalidateQueries({ queryKey: ['gallery'] });
+        } catch (error) {
+          console.error('Error invalidating gallery cache:', error);
+        }
+      },
+      retry: 1,
+    });
+  };
+
   // Dashboard Stats
   const useGetDashboardStats = () => {
     return useQuery({
@@ -631,6 +757,10 @@ export function useAdminQueries() {
     useAddEvent,
     useUpdateEvent,
     useDeleteEvent,
+    useGetAllGalleryItems,
+    useAddGalleryItem,
+    useUpdateGalleryItem,
+    useDeleteGalleryItem,
     useGetDashboardStats,
     useGetAllContactForms,
     useMarkContactForm,

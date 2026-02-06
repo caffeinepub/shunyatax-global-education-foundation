@@ -6,8 +6,8 @@ import Order "mo:core/Order";
 import Principals "mo:core/Principal";
 import Array "mo:core/Array";
 import Runtime "mo:core/Runtime";
-import Time "mo:core/Time";
 import Nat "mo:core/Nat";
+import Time "mo:core/Time";
 import MixinStorage "blob-storage/Mixin";
 import Storage "blob-storage/Storage";
 
@@ -16,6 +16,169 @@ actor {
 
   let accessControlState = AccessControl.initState();
   let adminEmails = Map.empty<Text, Principals.Principal>();
+
+  // Site Settings
+  public type SiteSettings = {
+    headerLogo : ?Storage.ExternalBlob;
+    headerLinks : [SiteSettingsLink];
+    headerSlogan : Text;
+    footerText : Text;
+    footerLinks : [SiteSettingsLink];
+    socialMediaLinks : [SiteSettingsLink];
+    copyright : Text;
+    newsletterSignupText : Text;
+    primaryColor : Text;
+    secondaryColor : Text;
+    backgroundColor : Text;
+    fontFamily : Text;
+  };
+
+  public type SiteSettingsLink = {
+    text : Text;
+    url : Text;
+    icon : Text;
+    order : Nat;
+  };
+
+  var siteSettings : SiteSettings = {
+    headerLogo = null;
+    headerLinks = [];
+    headerSlogan = "Helping Hands, Changing Lives";
+    footerText = "Together, we can make a difference. Supporting children, families, and communities.";
+    footerLinks = [];
+    socialMediaLinks = [];
+    copyright = "© 2024 Help Hands. All rights reserved.";
+    newsletterSignupText = "Sign up for updates and share our mission.";
+    primaryColor = "#0A87FF";
+    secondaryColor = "#FFD700";
+    backgroundColor = "#E7F1FF";
+    fontFamily = "Roboto, Arial, sans-serif";
+  };
+
+  public shared ({ caller }) func updateSiteSettings(newSettings : SiteSettings) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can update site settings");
+    };
+    siteSettings := newSettings;
+  };
+
+  public query ({ caller }) func getSiteSettings() : async SiteSettings {
+    siteSettings;
+  };
+
+  public shared ({ caller }) func addHeaderLink(newLink : {
+    text : Text;
+    url : Text;
+    icon : Text;
+    order : Nat;
+  }) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can add header links");
+    };
+
+    let link : SiteSettingsLink = {
+      text = newLink.text;
+      url = newLink.url;
+      icon = newLink.icon;
+      order = newLink.order;
+    };
+
+    siteSettings := {
+      siteSettings with
+      headerLinks = Array.tabulate(siteSettings.headerLinks.size() + 1, func(i) { if (i < siteSettings.headerLinks.size()) { siteSettings.headerLinks[i] } else { link } })
+    };
+  };
+
+  public shared ({ caller }) func addFooterLink(newLink : {
+    text : Text;
+    url : Text;
+    icon : Text;
+    order : Nat;
+  }) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can add footer links");
+    };
+
+    let link : SiteSettingsLink = {
+      text = newLink.text;
+      url = newLink.url;
+      icon = newLink.icon;
+      order = newLink.order;
+    };
+
+    siteSettings := {
+      siteSettings with
+      footerLinks = Array.tabulate(siteSettings.footerLinks.size() + 1, func(i) { if (i < siteSettings.footerLinks.size()) { siteSettings.footerLinks[i] } else { link } })
+    };
+  };
+
+  public shared ({ caller }) func addSocialMediaLink(newLink : {
+    text : Text;
+    url : Text;
+    icon : Text;
+    order : Nat;
+  }) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can add social media links");
+    };
+
+    let link : SiteSettingsLink = {
+      text = newLink.text;
+      url = newLink.url;
+      icon = newLink.icon;
+      order = newLink.order;
+    };
+
+    siteSettings := {
+      siteSettings with
+      socialMediaLinks = Array.tabulate(siteSettings.socialMediaLinks.size() + 1, func(i) { if (i < siteSettings.socialMediaLinks.size()) { siteSettings.socialMediaLinks[i] } else { link } })
+    };
+  };
+
+  public shared ({ caller }) func removeHeaderLink(index : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can remove header links");
+    };
+
+    if (index >= siteSettings.headerLinks.size()) {
+      Runtime.trap("Index out of bounds");
+    };
+
+    siteSettings := {
+      siteSettings with
+      headerLinks = Array.tabulate(siteSettings.headerLinks.size() - 1, func(i) { if (i < index) { siteSettings.headerLinks[i] } else { siteSettings.headerLinks[i + 1] } })
+    };
+  };
+
+  public shared ({ caller }) func removeFooterLink(index : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can remove footer links");
+    };
+
+    if (index >= siteSettings.footerLinks.size()) {
+      Runtime.trap("Index out of bounds");
+    };
+
+    siteSettings := {
+      siteSettings with
+      footerLinks = Array.tabulate(siteSettings.footerLinks.size() - 1, func(i) { if (i < index) { siteSettings.footerLinks[i] } else { siteSettings.footerLinks[i + 1] } })
+    };
+  };
+
+  public shared ({ caller }) func removeSocialMediaLink(index : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can remove social media links");
+    };
+
+    if (index >= siteSettings.socialMediaLinks.size()) {
+      Runtime.trap("Index out of bounds");
+    };
+
+    siteSettings := {
+      siteSettings with
+      socialMediaLinks = Array.tabulate(siteSettings.socialMediaLinks.size() - 1, func(i) { if (i < index) { siteSettings.socialMediaLinks[i] } else { siteSettings.socialMediaLinks[i + 1] } })
+    };
+  };
 
   // User Management
   public shared ({ caller }) func initializeAccessControl() : async () {
@@ -35,10 +198,16 @@ actor {
   };
 
   public shared ({ caller }) func registerEmail(email : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can register emails");
+    };
     adminEmails.add(email, Principals.fromText("anonymous"));
   };
 
   public shared ({ caller }) func associateEmailWithPrincipal(email : Text, principal : Principals.Principal) : async () {
+    if (caller != principal and not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Can only associate your own principal or be an admin");
+    };
     switch (adminEmails.get(email)) {
       case (null) {
         Runtime.trap("Email not registered");
@@ -188,6 +357,16 @@ actor {
         Text.compare(e1.title, e2.title);
       };
     };
+  };
+
+  public type GalleryItem = {
+    id : Nat;
+    title : Text;
+    altText : Text;
+    category : Text;
+    image : Storage.ExternalBlob;
+    displayOrder : Nat;
+    visible : Bool;
   };
 
   // Programs Management
@@ -350,6 +529,13 @@ actor {
     );
   };
 
+  public query ({ caller }) func getAllTeamMembersAdmin() : async [TeamMember] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can view all team members");
+    };
+    teamMembersMap.values().toArray().sort();
+  };
+
   // Impact Stories Management
   let impactStoriesMap = Map.empty<Text, ImpactStory>();
 
@@ -416,6 +602,13 @@ actor {
     publishedStories.filter(
       func(story) { story.published }
     );
+  };
+
+  public query ({ caller }) func getAllImpactStoriesAdmin() : async [ImpactStory] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can view all impact stories");
+    };
+    impactStoriesMap.values().toArray().sort();
   };
 
   // Contact Form Management
@@ -642,5 +835,118 @@ actor {
       totalUpcomingEvents = upcomingEventsCount;
       totalPastEvents = pastEventsCount;
     };
+  };
+
+  // Gallery Management
+  let galleryItemsMap = Map.empty<Nat, GalleryItem>();
+  var lastGalleryId : Nat = 0;
+
+  public shared ({ caller }) func addGalleryItem(
+    title : Text,
+    altText : Text,
+    category : Text,
+    image : Storage.ExternalBlob,
+    displayOrder : Nat
+  ) : async ?GalleryItem {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can add gallery items");
+    };
+
+    let galleryItem : GalleryItem = {
+      id = lastGalleryId + 1;
+      title;
+      altText;
+      category;
+      image;
+      displayOrder;
+      visible = true;
+    };
+
+    galleryItemsMap.add(galleryItem.id, galleryItem);
+    lastGalleryId += 1;
+    ?galleryItem;
+  };
+
+  public shared ({ caller }) func updateGalleryItem(
+    id : Nat,
+    title : Text,
+    altText : Text,
+    category : Text,
+    image : Storage.ExternalBlob,
+    displayOrder : Nat,
+    visible : Bool
+  ) : async ?GalleryItem {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can update gallery items");
+    };
+
+    switch (galleryItemsMap.get(id)) {
+      case (null) { null };
+      case (?_) {
+        let updatedGalleryItem : GalleryItem = {
+          id;
+          title;
+          altText;
+          category;
+          image;
+          displayOrder;
+          visible;
+        };
+        galleryItemsMap.add(id, updatedGalleryItem);
+        ?updatedGalleryItem;
+      };
+    };
+  };
+
+  public shared ({ caller }) func deleteGalleryItem(id : Nat) : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can delete gallery items");
+    };
+
+    switch (galleryItemsMap.get(id)) {
+      case (null) { false };
+      case (?_) {
+        galleryItemsMap.remove(id);
+        true;
+      };
+    };
+  };
+
+  public query ({ caller }) func getAllGalleryItems() : async [GalleryItem] {
+    let visibleItems = galleryItemsMap.values().toArray().filter(
+      func(item) { item.visible }
+    );
+    visibleItems.sort(
+      func(a, b) {
+        Nat.compare(a.displayOrder, b.displayOrder);
+      }
+    );
+  };
+
+  public query ({ caller }) func getGalleryItemsByCategory(category : Text) : async [GalleryItem] {
+    let filteredItems = galleryItemsMap.values().toArray().filter(
+      func(item) { item.category == category and item.visible }
+    );
+    filteredItems.sort(
+      func(a, b) {
+        Nat.compare(a.displayOrder, b.displayOrder);
+      }
+    );
+  };
+
+  public query ({ caller }) func getGalleryItem(id : Nat) : async ?GalleryItem {
+    galleryItemsMap.get(id);
+  };
+
+  public query ({ caller }) func getAllGalleryItemsAdmin() : async [GalleryItem] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can view all gallery items");
+    };
+    let allItems = galleryItemsMap.values().toArray();
+    allItems.sort(
+      func(a, b) {
+        Nat.compare(a.displayOrder, b.displayOrder);
+      }
+    );
   };
 };

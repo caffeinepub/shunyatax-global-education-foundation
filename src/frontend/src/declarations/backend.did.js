@@ -38,6 +38,15 @@ export const Event = IDL.Record({
   'image' : IDL.Opt(ExternalBlob),
   'location' : IDL.Text,
 });
+export const GalleryItem = IDL.Record({
+  'id' : IDL.Nat,
+  'title' : IDL.Text,
+  'displayOrder' : IDL.Nat,
+  'visible' : IDL.Bool,
+  'category' : IDL.Text,
+  'image' : ExternalBlob,
+  'altText' : IDL.Text,
+});
 export const ImpactStory = IDL.Record({
   'id' : IDL.Text,
   'title' : IDL.Text,
@@ -78,6 +87,26 @@ export const ContactForm = IDL.Record({
   'message' : IDL.Text,
 });
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const SiteSettingsLink = IDL.Record({
+  'url' : IDL.Text,
+  'order' : IDL.Nat,
+  'icon' : IDL.Text,
+  'text' : IDL.Text,
+});
+export const SiteSettings = IDL.Record({
+  'backgroundColor' : IDL.Text,
+  'footerLinks' : IDL.Vec(SiteSettingsLink),
+  'primaryColor' : IDL.Text,
+  'headerLogo' : IDL.Opt(ExternalBlob),
+  'headerLinks' : IDL.Vec(SiteSettingsLink),
+  'socialMediaLinks' : IDL.Vec(SiteSettingsLink),
+  'newsletterSignupText' : IDL.Text,
+  'headerSlogan' : IDL.Text,
+  'fontFamily' : IDL.Text,
+  'secondaryColor' : IDL.Text,
+  'copyright' : IDL.Text,
+  'footerText' : IDL.Text,
+});
 
 export const idlService = IDL.Service({
   '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -120,6 +149,35 @@ export const idlService = IDL.Service({
       [IDL.Opt(Event)],
       [],
     ),
+  'addFooterLink' : IDL.Func(
+      [
+        IDL.Record({
+          'url' : IDL.Text,
+          'order' : IDL.Nat,
+          'icon' : IDL.Text,
+          'text' : IDL.Text,
+        }),
+      ],
+      [],
+      [],
+    ),
+  'addGalleryItem' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, ExternalBlob, IDL.Nat],
+      [IDL.Opt(GalleryItem)],
+      [],
+    ),
+  'addHeaderLink' : IDL.Func(
+      [
+        IDL.Record({
+          'url' : IDL.Text,
+          'order' : IDL.Nat,
+          'icon' : IDL.Text,
+          'text' : IDL.Text,
+        }),
+      ],
+      [],
+      [],
+    ),
   'addImpactStory' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Opt(ExternalBlob)],
       [IDL.Opt(ImpactStory)],
@@ -137,6 +195,18 @@ export const idlService = IDL.Service({
       [IDL.Opt(Program)],
       [],
     ),
+  'addSocialMediaLink' : IDL.Func(
+      [
+        IDL.Record({
+          'url' : IDL.Text,
+          'order' : IDL.Nat,
+          'icon' : IDL.Text,
+          'text' : IDL.Text,
+        }),
+      ],
+      [],
+      [],
+    ),
   'addTeamMember' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Opt(ExternalBlob), IDL.Nat],
       [IDL.Opt(TeamMember)],
@@ -146,15 +216,20 @@ export const idlService = IDL.Service({
   'associateEmailWithPrincipal' : IDL.Func([IDL.Text, Principal], [], []),
   'deleteContactForm' : IDL.Func([IDL.Text], [IDL.Bool], []),
   'deleteEvent' : IDL.Func([IDL.Text], [IDL.Bool], []),
+  'deleteGalleryItem' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   'deleteImpactStory' : IDL.Func([IDL.Text], [IDL.Bool], []),
   'deleteProgram' : IDL.Func([IDL.Text], [IDL.Bool], []),
   'deleteTeamMember' : IDL.Func([IDL.Text], [IDL.Bool], []),
   'getAllContactForms' : IDL.Func([], [IDL.Vec(ContactForm)], ['query']),
   'getAllDonations' : IDL.Func([], [IDL.Vec(Donation)], ['query']),
   'getAllEvents' : IDL.Func([], [IDL.Vec(Event)], ['query']),
+  'getAllGalleryItems' : IDL.Func([], [IDL.Vec(GalleryItem)], ['query']),
+  'getAllGalleryItemsAdmin' : IDL.Func([], [IDL.Vec(GalleryItem)], ['query']),
   'getAllImpactStories' : IDL.Func([], [IDL.Vec(ImpactStory)], ['query']),
+  'getAllImpactStoriesAdmin' : IDL.Func([], [IDL.Vec(ImpactStory)], ['query']),
   'getAllPrograms' : IDL.Func([], [IDL.Vec(Program)], ['query']),
   'getAllTeamMembers' : IDL.Func([], [IDL.Vec(TeamMember)], ['query']),
+  'getAllTeamMembersAdmin' : IDL.Func([], [IDL.Vec(TeamMember)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getDashboardStats' : IDL.Func(
@@ -175,9 +250,16 @@ export const idlService = IDL.Service({
     ),
   'getEvent' : IDL.Func([IDL.Text], [IDL.Opt(Event)], ['query']),
   'getEventByYear' : IDL.Func([IDL.Int], [IDL.Vec(Event)], ['query']),
+  'getGalleryItem' : IDL.Func([IDL.Nat], [IDL.Opt(GalleryItem)], ['query']),
+  'getGalleryItemsByCategory' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(GalleryItem)],
+      ['query'],
+    ),
   'getPastEvents' : IDL.Func([], [IDL.Vec(Event)], ['query']),
   'getProgram' : IDL.Func([IDL.Text], [IDL.Opt(Program)], ['query']),
   'getProgramsByCategory' : IDL.Func([IDL.Text], [IDL.Vec(Program)], ['query']),
+  'getSiteSettings' : IDL.Func([], [SiteSettings], ['query']),
   'getUpcomingEvents' : IDL.Func([], [IDL.Vec(Event)], ['query']),
   'getUserProfile' : IDL.Func([Principal], [IDL.Opt(UserProfile)], ['query']),
   'grantAdminRoleByEmail' : IDL.Func([IDL.Text, Principal], [], []),
@@ -185,6 +267,9 @@ export const idlService = IDL.Service({
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'markContactFormAsRead' : IDL.Func([IDL.Text, IDL.Bool], [IDL.Bool], []),
   'registerEmail' : IDL.Func([IDL.Text], [], []),
+  'removeFooterLink' : IDL.Func([IDL.Nat], [], []),
+  'removeHeaderLink' : IDL.Func([IDL.Nat], [], []),
+  'removeSocialMediaLink' : IDL.Func([IDL.Nat], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'submitContactForm' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text],
@@ -205,6 +290,11 @@ export const idlService = IDL.Service({
       [IDL.Opt(Event)],
       [],
     ),
+  'updateGalleryItem' : IDL.Func(
+      [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, ExternalBlob, IDL.Nat, IDL.Bool],
+      [IDL.Opt(GalleryItem)],
+      [],
+    ),
   'updateImpactStory' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Opt(ExternalBlob), IDL.Bool],
       [IDL.Opt(ImpactStory)],
@@ -223,6 +313,7 @@ export const idlService = IDL.Service({
       [IDL.Opt(Program)],
       [],
     ),
+  'updateSiteSettings' : IDL.Func([SiteSettings], [], []),
   'updateTeamMember' : IDL.Func(
       [
         IDL.Text,
@@ -271,6 +362,15 @@ export const idlFactory = ({ IDL }) => {
     'image' : IDL.Opt(ExternalBlob),
     'location' : IDL.Text,
   });
+  const GalleryItem = IDL.Record({
+    'id' : IDL.Nat,
+    'title' : IDL.Text,
+    'displayOrder' : IDL.Nat,
+    'visible' : IDL.Bool,
+    'category' : IDL.Text,
+    'image' : ExternalBlob,
+    'altText' : IDL.Text,
+  });
   const ImpactStory = IDL.Record({
     'id' : IDL.Text,
     'title' : IDL.Text,
@@ -311,6 +411,26 @@ export const idlFactory = ({ IDL }) => {
     'message' : IDL.Text,
   });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const SiteSettingsLink = IDL.Record({
+    'url' : IDL.Text,
+    'order' : IDL.Nat,
+    'icon' : IDL.Text,
+    'text' : IDL.Text,
+  });
+  const SiteSettings = IDL.Record({
+    'backgroundColor' : IDL.Text,
+    'footerLinks' : IDL.Vec(SiteSettingsLink),
+    'primaryColor' : IDL.Text,
+    'headerLogo' : IDL.Opt(ExternalBlob),
+    'headerLinks' : IDL.Vec(SiteSettingsLink),
+    'socialMediaLinks' : IDL.Vec(SiteSettingsLink),
+    'newsletterSignupText' : IDL.Text,
+    'headerSlogan' : IDL.Text,
+    'fontFamily' : IDL.Text,
+    'secondaryColor' : IDL.Text,
+    'copyright' : IDL.Text,
+    'footerText' : IDL.Text,
+  });
   
   return IDL.Service({
     '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -353,6 +473,35 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(Event)],
         [],
       ),
+    'addFooterLink' : IDL.Func(
+        [
+          IDL.Record({
+            'url' : IDL.Text,
+            'order' : IDL.Nat,
+            'icon' : IDL.Text,
+            'text' : IDL.Text,
+          }),
+        ],
+        [],
+        [],
+      ),
+    'addGalleryItem' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, ExternalBlob, IDL.Nat],
+        [IDL.Opt(GalleryItem)],
+        [],
+      ),
+    'addHeaderLink' : IDL.Func(
+        [
+          IDL.Record({
+            'url' : IDL.Text,
+            'order' : IDL.Nat,
+            'icon' : IDL.Text,
+            'text' : IDL.Text,
+          }),
+        ],
+        [],
+        [],
+      ),
     'addImpactStory' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Opt(ExternalBlob)],
         [IDL.Opt(ImpactStory)],
@@ -370,6 +519,18 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(Program)],
         [],
       ),
+    'addSocialMediaLink' : IDL.Func(
+        [
+          IDL.Record({
+            'url' : IDL.Text,
+            'order' : IDL.Nat,
+            'icon' : IDL.Text,
+            'text' : IDL.Text,
+          }),
+        ],
+        [],
+        [],
+      ),
     'addTeamMember' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Opt(ExternalBlob), IDL.Nat],
         [IDL.Opt(TeamMember)],
@@ -379,15 +540,24 @@ export const idlFactory = ({ IDL }) => {
     'associateEmailWithPrincipal' : IDL.Func([IDL.Text, Principal], [], []),
     'deleteContactForm' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'deleteEvent' : IDL.Func([IDL.Text], [IDL.Bool], []),
+    'deleteGalleryItem' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'deleteImpactStory' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'deleteProgram' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'deleteTeamMember' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'getAllContactForms' : IDL.Func([], [IDL.Vec(ContactForm)], ['query']),
     'getAllDonations' : IDL.Func([], [IDL.Vec(Donation)], ['query']),
     'getAllEvents' : IDL.Func([], [IDL.Vec(Event)], ['query']),
+    'getAllGalleryItems' : IDL.Func([], [IDL.Vec(GalleryItem)], ['query']),
+    'getAllGalleryItemsAdmin' : IDL.Func([], [IDL.Vec(GalleryItem)], ['query']),
     'getAllImpactStories' : IDL.Func([], [IDL.Vec(ImpactStory)], ['query']),
+    'getAllImpactStoriesAdmin' : IDL.Func(
+        [],
+        [IDL.Vec(ImpactStory)],
+        ['query'],
+      ),
     'getAllPrograms' : IDL.Func([], [IDL.Vec(Program)], ['query']),
     'getAllTeamMembers' : IDL.Func([], [IDL.Vec(TeamMember)], ['query']),
+    'getAllTeamMembersAdmin' : IDL.Func([], [IDL.Vec(TeamMember)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getDashboardStats' : IDL.Func(
@@ -408,6 +578,12 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getEvent' : IDL.Func([IDL.Text], [IDL.Opt(Event)], ['query']),
     'getEventByYear' : IDL.Func([IDL.Int], [IDL.Vec(Event)], ['query']),
+    'getGalleryItem' : IDL.Func([IDL.Nat], [IDL.Opt(GalleryItem)], ['query']),
+    'getGalleryItemsByCategory' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(GalleryItem)],
+        ['query'],
+      ),
     'getPastEvents' : IDL.Func([], [IDL.Vec(Event)], ['query']),
     'getProgram' : IDL.Func([IDL.Text], [IDL.Opt(Program)], ['query']),
     'getProgramsByCategory' : IDL.Func(
@@ -415,6 +591,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Program)],
         ['query'],
       ),
+    'getSiteSettings' : IDL.Func([], [SiteSettings], ['query']),
     'getUpcomingEvents' : IDL.Func([], [IDL.Vec(Event)], ['query']),
     'getUserProfile' : IDL.Func([Principal], [IDL.Opt(UserProfile)], ['query']),
     'grantAdminRoleByEmail' : IDL.Func([IDL.Text, Principal], [], []),
@@ -422,6 +599,9 @@ export const idlFactory = ({ IDL }) => {
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'markContactFormAsRead' : IDL.Func([IDL.Text, IDL.Bool], [IDL.Bool], []),
     'registerEmail' : IDL.Func([IDL.Text], [], []),
+    'removeFooterLink' : IDL.Func([IDL.Nat], [], []),
+    'removeHeaderLink' : IDL.Func([IDL.Nat], [], []),
+    'removeSocialMediaLink' : IDL.Func([IDL.Nat], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'submitContactForm' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text],
@@ -442,6 +622,19 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(Event)],
         [],
       ),
+    'updateGalleryItem' : IDL.Func(
+        [
+          IDL.Nat,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          ExternalBlob,
+          IDL.Nat,
+          IDL.Bool,
+        ],
+        [IDL.Opt(GalleryItem)],
+        [],
+      ),
     'updateImpactStory' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Opt(ExternalBlob), IDL.Bool],
         [IDL.Opt(ImpactStory)],
@@ -460,6 +653,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(Program)],
         [],
       ),
+    'updateSiteSettings' : IDL.Func([SiteSettings], [], []),
     'updateTeamMember' : IDL.Func(
         [
           IDL.Text,

@@ -37,6 +37,15 @@ export interface Event {
   'location' : string,
 }
 export type ExternalBlob = Uint8Array;
+export interface GalleryItem {
+  'id' : bigint,
+  'title' : string,
+  'displayOrder' : bigint,
+  'visible' : boolean,
+  'category' : string,
+  'image' : ExternalBlob,
+  'altText' : string,
+}
 export interface ImpactStory {
   'id' : string,
   'title' : string,
@@ -53,6 +62,26 @@ export interface Program {
   'category' : string,
   'image' : [] | [ExternalBlob],
   'objectives' : Array<string>,
+}
+export interface SiteSettings {
+  'backgroundColor' : string,
+  'footerLinks' : Array<SiteSettingsLink>,
+  'primaryColor' : string,
+  'headerLogo' : [] | [ExternalBlob],
+  'headerLinks' : Array<SiteSettingsLink>,
+  'socialMediaLinks' : Array<SiteSettingsLink>,
+  'newsletterSignupText' : string,
+  'headerSlogan' : string,
+  'fontFamily' : string,
+  'secondaryColor' : string,
+  'copyright' : string,
+  'footerText' : string,
+}
+export interface SiteSettingsLink {
+  'url' : string,
+  'order' : bigint,
+  'icon' : string,
+  'text' : string,
 }
 export interface TeamMember {
   'id' : string,
@@ -99,6 +128,18 @@ export interface _SERVICE {
     [string, bigint, string, string, string, [] | [ExternalBlob], string],
     [] | [Event]
   >,
+  'addFooterLink' : ActorMethod<
+    [{ 'url' : string, 'order' : bigint, 'icon' : string, 'text' : string }],
+    undefined
+  >,
+  'addGalleryItem' : ActorMethod<
+    [string, string, string, ExternalBlob, bigint],
+    [] | [GalleryItem]
+  >,
+  'addHeaderLink' : ActorMethod<
+    [{ 'url' : string, 'order' : bigint, 'icon' : string, 'text' : string }],
+    undefined
+  >,
   'addImpactStory' : ActorMethod<
     [string, string, [] | [ExternalBlob]],
     [] | [ImpactStory]
@@ -106,6 +147,10 @@ export interface _SERVICE {
   'addProgram' : ActorMethod<
     [string, string, string, Array<string>, Array<string>, [] | [ExternalBlob]],
     [] | [Program]
+  >,
+  'addSocialMediaLink' : ActorMethod<
+    [{ 'url' : string, 'order' : bigint, 'icon' : string, 'text' : string }],
+    undefined
   >,
   'addTeamMember' : ActorMethod<
     [string, string, string, [] | [ExternalBlob], bigint],
@@ -115,15 +160,20 @@ export interface _SERVICE {
   'associateEmailWithPrincipal' : ActorMethod<[string, Principal], undefined>,
   'deleteContactForm' : ActorMethod<[string], boolean>,
   'deleteEvent' : ActorMethod<[string], boolean>,
+  'deleteGalleryItem' : ActorMethod<[bigint], boolean>,
   'deleteImpactStory' : ActorMethod<[string], boolean>,
   'deleteProgram' : ActorMethod<[string], boolean>,
   'deleteTeamMember' : ActorMethod<[string], boolean>,
   'getAllContactForms' : ActorMethod<[], Array<ContactForm>>,
   'getAllDonations' : ActorMethod<[], Array<Donation>>,
   'getAllEvents' : ActorMethod<[], Array<Event>>,
+  'getAllGalleryItems' : ActorMethod<[], Array<GalleryItem>>,
+  'getAllGalleryItemsAdmin' : ActorMethod<[], Array<GalleryItem>>,
   'getAllImpactStories' : ActorMethod<[], Array<ImpactStory>>,
+  'getAllImpactStoriesAdmin' : ActorMethod<[], Array<ImpactStory>>,
   'getAllPrograms' : ActorMethod<[], Array<Program>>,
   'getAllTeamMembers' : ActorMethod<[], Array<TeamMember>>,
+  'getAllTeamMembersAdmin' : ActorMethod<[], Array<TeamMember>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getDashboardStats' : ActorMethod<
@@ -141,9 +191,12 @@ export interface _SERVICE {
   >,
   'getEvent' : ActorMethod<[string], [] | [Event]>,
   'getEventByYear' : ActorMethod<[bigint], Array<Event>>,
+  'getGalleryItem' : ActorMethod<[bigint], [] | [GalleryItem]>,
+  'getGalleryItemsByCategory' : ActorMethod<[string], Array<GalleryItem>>,
   'getPastEvents' : ActorMethod<[], Array<Event>>,
   'getProgram' : ActorMethod<[string], [] | [Program]>,
   'getProgramsByCategory' : ActorMethod<[string], Array<Program>>,
+  'getSiteSettings' : ActorMethod<[], SiteSettings>,
   'getUpcomingEvents' : ActorMethod<[], Array<Event>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'grantAdminRoleByEmail' : ActorMethod<[string, Principal], undefined>,
@@ -151,6 +204,9 @@ export interface _SERVICE {
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'markContactFormAsRead' : ActorMethod<[string, boolean], boolean>,
   'registerEmail' : ActorMethod<[string], undefined>,
+  'removeFooterLink' : ActorMethod<[bigint], undefined>,
+  'removeHeaderLink' : ActorMethod<[bigint], undefined>,
+  'removeSocialMediaLink' : ActorMethod<[bigint], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'submitContactForm' : ActorMethod<[string, string, string], ContactForm>,
   'updateEvent' : ActorMethod<
@@ -165,6 +221,10 @@ export interface _SERVICE {
       string,
     ],
     [] | [Event]
+  >,
+  'updateGalleryItem' : ActorMethod<
+    [bigint, string, string, string, ExternalBlob, bigint, boolean],
+    [] | [GalleryItem]
   >,
   'updateImpactStory' : ActorMethod<
     [string, string, string, [] | [ExternalBlob], boolean],
@@ -182,6 +242,7 @@ export interface _SERVICE {
     ],
     [] | [Program]
   >,
+  'updateSiteSettings' : ActorMethod<[SiteSettings], undefined>,
   'updateTeamMember' : ActorMethod<
     [string, string, string, string, [] | [ExternalBlob], bigint, boolean],
     [] | [TeamMember]

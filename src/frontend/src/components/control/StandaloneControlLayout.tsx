@@ -11,7 +11,8 @@ import {
   LogOut,
   Menu,
   X,
-  ExternalLink
+  ExternalLink,
+  Settings
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -40,6 +41,7 @@ export default function StandaloneControlLayout() {
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+    { icon: Settings, label: 'Site Settings', path: '/site-settings' },
     { icon: BookOpen, label: 'Programs', path: '/programs' },
     { icon: Calendar, label: 'Events', path: '/events' },
     { icon: Image, label: 'Gallery', path: '/gallery' },
@@ -85,7 +87,7 @@ export default function StandaloneControlLayout() {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <img
-              src="/assets/a_professional_vector_style_logo_design_Y10xaOEOT32zN1Lvad4GEQ_-removebg-preview.png"
+              src="/assets/Untitled design (94)-2.png"
               alt="Logo"
               className="h-14 w-auto"
             />
@@ -117,7 +119,7 @@ export default function StandaloneControlLayout() {
           <div className="p-6 border-b border-border/50">
             <div className="flex items-center gap-3 mb-3">
               <img 
-                src="/assets/a_professional_vector_style_logo_design_Y10xaOEOT32zN1Lvad4GEQ_-removebg-preview.png" 
+                src="/assets/Untitled design (94)-2.png" 
                 alt="Shunyatax Foundation Logo" 
                 className="h-16 w-auto object-contain"
               />

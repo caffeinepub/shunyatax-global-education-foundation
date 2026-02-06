@@ -1,5 +1,6 @@
 import { Outlet, useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
+import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { Button } from '@/components/ui/button';
 import { 
   LayoutDashboard, 
@@ -10,27 +11,27 @@ import {
   Heart,
   LogOut,
   Menu,
-  X
+  X,
+  ShieldAlert,
+  Settings
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function ControlLayout() {
   const { identity, clear, loginStatus } = useInternetIdentity();
+  const { isAuthenticated, isAdmin, isLoading: accessLoading } = useAdminAccess();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (loginStatus !== 'logging-in') {
-      setIsLoading(false);
-    }
-  }, [loginStatus]);
+  const isLoading = loginStatus === 'logging-in' || accessLoading;
 
+  // Redirect unauthenticated users to /admin
   useEffect(() => {
-    if (!isLoading && !identity) {
-      navigate({ to: '/' });
+    if (!isLoading && !isAuthenticated) {
+      navigate({ to: '/admin' });
     }
-  }, [identity, isLoading, navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
 
   const handleLogout = async () => {
     await clear();
@@ -39,6 +40,7 @@ export default function ControlLayout() {
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/control' },
+    { icon: Settings, label: 'Site Settings', path: '/control/site-settings' },
     { icon: BookOpen, label: 'Programs', path: '/control/programs' },
     { icon: Calendar, label: 'Events', path: '/control/events' },
     { icon: Image, label: 'Gallery', path: '/control/gallery' },
@@ -57,7 +59,49 @@ export default function ControlLayout() {
     );
   }
 
-  if (!identity) {
+  // Show access denied screen for authenticated non-admin users
+  if (isAuthenticated && !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-destructive/5 via-background to-destructive/10">
+        <Card className="w-full max-w-md border-destructive/20 shadow-2xl">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+              <ShieldAlert className="h-8 w-8 text-destructive" />
+            </div>
+            <CardTitle className="text-2xl">Access Denied</CardTitle>
+            <CardDescription className="text-base">
+              You do not have permission to access the Control Panel. Only administrators can access this area.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-muted/50 p-4 rounded-lg text-sm text-muted-foreground">
+              <p className="font-semibold mb-2">Need admin access?</p>
+              <p>Contact an existing administrator to grant you admin privileges.</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => navigate({ to: '/' })}
+              >
+                Back to Home
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !identity) {
     return null;
   }
 
@@ -68,7 +112,7 @@ export default function ControlLayout() {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <img
-              src="/assets/a_professional_vector_style_logo_design_Y10xaOEOT32zN1Lvad4GEQ_-removebg-preview.png"
+              src="/assets/Untitled design (94)-2.png"
               alt="Logo"
               className="h-14 w-auto"
             />
@@ -95,7 +139,7 @@ export default function ControlLayout() {
           <div className="p-6 border-b border-border/50">
             <div className="flex items-center gap-3 mb-2">
               <img
-                src="/assets/a_professional_vector_style_logo_design_Y10xaOEOT32zN1Lvad4GEQ_-removebg-preview.png"
+                src="/assets/Untitled design (94)-2.png"
                 alt="Logo"
                 className="h-16 w-auto"
               />

@@ -25,6 +25,7 @@ import ControlEvents from './pages/control/ControlEvents';
 import ControlGallery from './pages/control/ControlGallery';
 import ControlTeam from './pages/control/ControlTeam';
 import ControlImpact from './pages/control/ControlImpact';
+import ControlSiteSettings from './pages/control/ControlSiteSettings';
 import { Toaster } from './components/ui/sonner';
 import { AlertCircle, RefreshCw, Home, Loader2 } from 'lucide-react';
 import { Button } from './components/ui/button';
@@ -352,6 +353,12 @@ const controlDashboardRoute = createRoute({
   component: () => <SafeComponent component={ControlDashboard} />,
 });
 
+const controlSiteSettingsRoute = createRoute({
+  getParentRoute: () => controlRootRoute,
+  path: '/site-settings',
+  component: () => <SafeComponent component={ControlSiteSettings} />,
+});
+
 const controlProgramsRoute = createRoute({
   getParentRoute: () => controlRootRoute,
   path: '/programs',
@@ -403,6 +410,7 @@ const routeTree = rootRoute.addChildren([
   ]),
   controlRootRoute.addChildren([
     controlDashboardRoute,
+    controlSiteSettingsRoute,
     controlProgramsRoute,
     controlEventsRoute,
     controlGalleryRoute,

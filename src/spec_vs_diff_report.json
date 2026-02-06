@@ -1,74 +1,53 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-03T09:18:44.944Z",
-  "summary": "The diff implements an Internet Identity + backend role-based gating flow for the admin panel and adds backend/frontend plumbing for email↔principal association and granting admin by email. However, REQ-1’s specific sessionStorage-based /admin redirect behavior is not evidenced (and the diff summary claims sessionStorage checks were removed). Also, the email registration/association flow appears to require a prior backend `registerEmail` call, but no UI path to do that is shown. Additionally, many unrelated UI/UX changes (Header/Footer/Home/About/etc.) and new user profile APIs appear outside the BuildRequest scope.",
-  "missing_requirements": [
-    {
-      "id": "REQ-1",
-      "requirement": "If `sessionStorage.adminAuthenticated` is valid, visiting `/admin` redirects to `/admin-panel/dashboard` (and no navigation to `/admin/dashboard`).",
-      "reason": "The new flow appears to rely on Internet Identity role checks rather than `sessionStorage.adminAuthenticated`. The diff summary explicitly states the routing/auth flow is \"without sessionStorage checks\", and the provided code evidence only shows redirect based on II auth+admin role (not sessionStorage).",
-      "evidence": [
-        "frontend/src/pages/admin/AdminLogin.tsx",
-        "frontend-file-summaries.txt"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "An authenticated admin can load `/admin-panel/dashboard` and successfully perform at least one admin CRUD action (e.g., create/update/delete a Program or Event) without backend authorization errors.",
-      "reason": "The diff shows admin gating (role check + clear messages) and role querying, but does not provide evidence that any admin CRUD mutation path was updated/verified to use II actor identity and succeed end-to-end. No program/event admin mutation code is shown in the diff summary.",
-      "evidence": [
-        "frontend/src/hooks/useAdminAccess.ts",
-        "frontend/src/components/admin/AdminLayout.tsx",
-        "frontend/src/App.tsx"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Backend-supported mechanism to save/associate an email address to the caller’s principal, and UI support so an admin can grant admin to `nikhil44soni7@gmail.com` after association/registration.",
-      "reason": "Backend requires `registerEmail(email)` to be called before `associateEmailWithPrincipal` succeeds (otherwise traps \"Email not registered\"), but no UI or flow in the diff shows calling `registerEmail` for the target email (or at all). This blocks the described association→grant process unless something outside the diff performs registration.",
-      "evidence": [
-        "backend/main.mo",
-        "frontend/src/hooks/useAdminRoleManagement.ts",
-        "frontend/src/pages/admin/AdminLogin.tsx"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-06T12:05:03.033Z",
+  "summary": "The BuildRequest contains no stated requirements or acceptance criteria, but the diff shows multiple functional and UI changes across control layouts, header/footer behavior, and routing/error-handling summaries.",
+  "missing_requirements": [],
   "hallucinated_features": [
     {
-      "description": "Large-scale public site UI/UX restyling and content changes (Home/About/Programs/Gallery/Donate/Contact, Header/Footer styling, updated contact info, animations, etc.).",
-      "reason": "Not requested by any requirement (the BuildRequest is focused on admin access, II protection, and granting admin by email).",
+      "description": "Added/changed control panel authentication and admin-authorization gating (redirect unauthenticated users, access denied screen for non-admins, logout handling).",
+      "reason": "No requirements were specified in the BuildRequest, so implementing auth/authorization flows is not traceable to a requested requirement.",
+      "evidence": [
+        "frontend/src/components/control/ControlLayout.tsx"
+      ]
+    },
+    {
+      "description": "Added/changed standalone control layout behavior including Internet Identity-based access gating and mobile sidebar/menu UI.",
+      "reason": "No requirements were specified in the BuildRequest.",
+      "evidence": [
+        "frontend/src/components/control/StandaloneControlLayout.tsx"
+      ]
+    },
+    {
+      "description": "Updated Header to use backend site settings with fallbacks, added safe error-handling wrappers for router state and Internet Identity hook usage, and introduced auth modal state handling.",
+      "reason": "No requirements were specified in the BuildRequest.",
+      "evidence": [
+        "frontend/src/components/Header.tsx"
+      ]
+    },
+    {
+      "description": "Updated Footer to load site settings and dynamically derive footer links/social links with fallbacks (including default logo/about text and social links).",
+      "reason": "No requirements were specified in the BuildRequest.",
+      "evidence": [
+        "frontend/src/components/Footer.tsx"
+      ]
+    },
+    {
+      "description": "Introduced/mentioned new routing and error boundary behaviors (e.g., /control/site-settings route, layout error boundaries, Suspense around Outlet) per frontend file summaries.",
+      "reason": "No requirements were specified in the BuildRequest; these are additional architectural behaviors beyond any stated request.",
       "evidence": [
         "frontend-file-summaries.txt"
       ]
-    },
-    {
-      "description": "Addition of `project_state.json` describing broad product features.",
-      "reason": "Not requested by the BuildRequest requirements.",
-      "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "description": "Backend user profile APIs (`UserProfile`, `getCallerUserProfile`, `getUserProfile`, `saveCallerUserProfile`).",
-      "reason": "Not requested by the BuildRequest (scope is admin access + role granting by email).",
-      "evidence": [
-        "backend/main.mo"
-      ]
     }
   ],
-  "confidence": 0.64,
+  "confidence": 0.72,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/App.tsx",
-    "frontend/src/components/admin/AdminLayout.tsx",
-    "frontend/src/hooks/useAdminAccess.ts",
-    "frontend/src/hooks/useAdminRoleManagement.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
-    "frontend/src/pages/admin/AdminDashboard.tsx",
-    "frontend/src/pages/admin/AdminLogin.tsx",
-    "frontend/src/utils/authorizationErrors.ts",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/control/ControlLayout.tsx",
+    "frontend/src/components/control/StandaloneControlLayout.tsx",
     "project_state.json"
   ]
 }

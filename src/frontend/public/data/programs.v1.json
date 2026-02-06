@@ -1,0 +1,66 @@
+[
+  {
+    "id": "early-childhood-education_education",
+    "title": "Early Childhood Education",
+    "description": "Comprehensive early learning programs for children aged 3-6 years",
+    "category": "education",
+    "objectives": [
+      "Develop foundational literacy and numeracy skills",
+      "Foster social and emotional development",
+      "Encourage creativity and critical thinking"
+    ],
+    "outcomes": [
+      "School readiness for primary education",
+      "Improved cognitive and motor skills"
+    ],
+    "image": null
+  },
+  {
+    "id": "adult-literacy-program_literacy",
+    "title": "Adult Literacy Program",
+    "description": "Basic reading, writing, and numeracy skills for adults",
+    "category": "literacy",
+    "objectives": [
+      "Teach fundamental reading and writing skills",
+      "Provide practical math education",
+      "Build confidence in daily communication"
+    ],
+    "outcomes": [
+      "Increased employment opportunities",
+      "Enhanced quality of life"
+    ],
+    "image": null
+  },
+  {
+    "id": "vocational-training_skills",
+    "title": "Vocational Training",
+    "description": "Hands-on skill development for sustainable livelihoods",
+    "category": "skills",
+    "objectives": [
+      "Provide marketable technical skills",
+      "Offer entrepreneurship training",
+      "Connect graduates with employment opportunities"
+    ],
+    "outcomes": [
+      "Job placement for 80% of graduates",
+      "Increased household income"
+    ],
+    "image": null
+  },
+  {
+    "id": "scholarship-program_education",
+    "title": "Scholarship Program",
+    "description": "Financial support for underprivileged students to pursue higher education",
+    "category": "education",
+    "objectives": [
+      "Remove financial barriers to education",
+      "Support academic excellence",
+      "Mentor scholarship recipients"
+    ],
+    "outcomes": [
+      "Higher education completion",
+      "Career advancement opportunities"
+    ],
+    "image": null
+  }
+]

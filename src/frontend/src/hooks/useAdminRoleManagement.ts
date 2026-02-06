@@ -6,6 +6,16 @@ export function useAdminRoleManagement() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
+  const registerEmail = useMutation({
+    mutationFn: async (email: string) => {
+      if (!actor) throw new Error('Actor not initialized');
+      await actor.registerEmail(email);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminRole'] });
+    },
+  });
+
   const associateEmail = useMutation({
     mutationFn: async (data: { email: string; principal: Principal }) => {
       if (!actor) throw new Error('Actor not initialized');
@@ -27,6 +37,7 @@ export function useAdminRoleManagement() {
   });
 
   return {
+    registerEmail,
     associateEmail,
     grantAdminByEmail,
   };

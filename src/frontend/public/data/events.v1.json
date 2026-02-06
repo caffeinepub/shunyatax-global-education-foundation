@@ -1,0 +1,35 @@
+[
+  {
+    "id": "annual-education-summit_2026",
+    "title": "Annual Education Summit 2026",
+    "date": 1767225600000000000,
+    "location": "Mumbai, India",
+    "venue": "Convention Center Hall A",
+    "description": "Join us for our flagship event bringing together educators, policymakers, and community leaders to discuss the future of education.",
+    "status": "upcoming",
+    "image": null,
+    "publishedAt": 1735689600000000000
+  },
+  {
+    "id": "community-book-drive_2025",
+    "title": "Community Book Drive",
+    "date": 1735689600000000000,
+    "location": "Delhi, India",
+    "venue": "Central Library",
+    "description": "Help us collect books for rural libraries. Every book donated makes a difference in a child's life.",
+    "status": "past",
+    "image": null,
+    "publishedAt": 1730505600000000000
+  },
+  {
+    "id": "teacher-training-workshop_2026",
+    "title": "Teacher Training Workshop",
+    "date": 1743465600000000000,
+    "location": "Bangalore, India",
+    "venue": "Education Institute Campus",
+    "description": "Professional development workshop for educators focusing on modern teaching methodologies and inclusive education practices.",
+    "status": "upcoming",
+    "image": null,
+    "publishedAt": 1735689600000000000
+  }
+]

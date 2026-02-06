@@ -1,8 +1,9 @@
 import { Link } from '@tanstack/react-router';
 import { SiFacebook, SiX, SiInstagram, SiLinkedin, SiYoutube } from 'react-icons/si';
 import { Heart, Mail, Phone, MapPin } from 'lucide-react';
+import { useGetSiteSettings } from '@/hooks/useSiteSettings';
 
-const footerLinks = {
+const defaultFooterLinks = {
   quickLinks: [
     { name: 'Home', path: '/' },
     { name: 'About Us', path: '/about' },
@@ -16,7 +17,7 @@ const footerLinks = {
   ],
 };
 
-const socialLinks = [
+const defaultSocialLinks = [
   { 
     icon: SiFacebook, 
     href: 'https://www.facebook.com/people/Shunyatax-Global/100090713358913/', 
@@ -54,7 +55,30 @@ const socialLinks = [
   },
 ];
 
+const defaultLogoPath = '/assets/Untitled design (94)-2.png';
+const defaultAboutText = 'Empowering communities through education and creating opportunities for a brighter future.';
+
 export default function Footer() {
+  const { data: siteSettings } = useGetSiteSettings();
+
+  // Use backend settings with fallbacks
+  const logoPath = siteSettings?.headerLogo?.getDirectURL() || defaultLogoPath;
+  const aboutText = siteSettings?.footerText || defaultAboutText;
+  
+  const footerLinks = siteSettings?.footerLinks && siteSettings.footerLinks.length > 0
+    ? siteSettings.footerLinks.map(link => ({ name: link.text, path: link.url }))
+    : [...defaultFooterLinks.quickLinks, ...defaultFooterLinks.getInvolved];
+
+  const socialLinks = siteSettings?.socialMediaLinks && siteSettings.socialMediaLinks.length > 0
+    ? siteSettings.socialMediaLinks.map(link => ({
+        icon: SiFacebook, // Default icon, could be enhanced to map icon names
+        href: link.url,
+        label: link.text,
+        color: 'text-[#1877F2]',
+        hoverColor: 'hover:text-[#0d5dbf]'
+      }))
+    : defaultSocialLinks;
+
   return (
     <footer className="bg-gradient-to-br from-primary via-gradient-mid to-gradient-end text-primary-foreground">
       <div className="container mx-auto px-4 py-12">
@@ -62,12 +86,12 @@ export default function Footer() {
           {/* About Section */}
           <div className="space-y-4">
             <img
-              src="/assets/a_professional_vector_style_logo_design_Y10xaOEOT32zN1Lvad4GEQ_-removebg-preview.png"
+              src={logoPath}
               alt="Shunyatax Global Education Foundation"
               className="h-16 w-auto drop-shadow-lg"
             />
             <p className="text-sm text-primary-foreground/75">
-              Empowering communities through education and creating opportunities for a brighter future.
+              {aboutText}
             </p>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
@@ -89,7 +113,7 @@ export default function Footer() {
           <div>
             <h3 className="mb-4 text-lg font-bold text-black">Quick Links</h3>
             <ul className="space-y-2">
-              {footerLinks.quickLinks.map((link) => (
+              {defaultFooterLinks.quickLinks.map((link) => (
                 <li key={link.path}>
                   <Link
                     to={link.path}
@@ -106,7 +130,7 @@ export default function Footer() {
           <div>
             <h3 className="mb-4 text-lg font-bold text-black">Get Involved</h3>
             <ul className="space-y-2">
-              {footerLinks.getInvolved.map((link) => (
+              {defaultFooterLinks.getInvolved.map((link) => (
                 <li key={link.path}>
                   <Link
                     to={link.path}
@@ -152,7 +176,7 @@ export default function Footer() {
 
         <div className="mt-12 border-t border-primary-foreground/10 pt-8 text-center text-sm text-primary-foreground/60">
           <p className="flex items-center justify-center gap-1">
-            © 2025. Built with <Heart className="h-4 w-4 fill-accent text-accent" /> using{' '}
+            © 2026. Built with <Heart className="h-4 w-4 fill-accent text-accent" /> using{' '}
             <a
               href="https://caffeine.ai"
               target="_blank"

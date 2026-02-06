@@ -18,11 +18,19 @@ export default function AdminLogin() {
   
   const [email, setEmail] = useState('');
   const [isAssociating, setIsAssociating] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
 
   // Redirect if already admin
   useEffect(() => {
     if (isAuthenticated && isAdmin && !accessLoading) {
       window.location.href = '/admin-panel/dashboard';
+    }
+  }, [isAuthenticated, isAdmin, accessLoading]);
+
+  // Show email form after successful authentication if not admin
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin && !accessLoading) {
+      setShowEmailForm(true);
     }
   }, [isAuthenticated, isAdmin, accessLoading]);
 
@@ -56,6 +64,7 @@ export default function AdminLogin() {
       });
       toast.success('Email associated successfully! An admin can now grant you access.');
       setEmail('');
+      setShowEmailForm(false);
     } catch (error) {
       console.error('Email association error:', error);
       toast.error(normalizeAuthError(error));
@@ -90,7 +99,7 @@ export default function AdminLogin() {
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  You need to authenticate with Internet Identity to access the admin panel.
+                  Step 1: Authenticate with Internet Identity to begin the admin access process.
                 </AlertDescription>
               </Alert>
               
@@ -114,63 +123,74 @@ export default function AdminLogin() {
             </>
           ) : !isAdmin ? (
             <>
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  You are logged in but do not have admin privileges. Associate your email below so an admin can grant you access.
-                </AlertDescription>
-              </Alert>
+              {showEmailForm ? (
+                <>
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Step 2: Associate your email address with your Internet Identity so an admin can grant you access.
+                    </AlertDescription>
+                  </Alert>
 
-              <form onSubmit={handleAssociateEmail} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-foreground font-semibold">
-                    Email Address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-12 border-border/50 focus:border-primary focus:ring-primary"
+                  <form onSubmit={handleAssociateEmail} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-foreground font-semibold">
+                        Email Address
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="your.email@example.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="pl-10 h-12 border-border/50 focus:border-primary focus:ring-primary"
+                          disabled={isAssociating}
+                          required
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        This email will be associated with your current Internet Identity principal.
+                      </p>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full h-12 text-base font-semibold"
                       disabled={isAssociating}
-                      required
-                    />
+                    >
+                      {isAssociating ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Associating...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="mr-2 h-5 w-5" />
+                          Associate Email
+                        </>
+                      )}
+                    </Button>
+                  </form>
+
+                  <div className="text-sm text-muted-foreground bg-accent/5 p-4 rounded-lg">
+                    <p className="font-semibold mb-2">Next Steps:</p>
+                    <ol className="list-decimal list-inside space-y-1">
+                      <li>Associate your email with your Internet Identity</li>
+                      <li>Contact an existing admin to grant you admin rights</li>
+                      <li>Once granted, you'll be able to access the admin panel</li>
+                    </ol>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    This email will be associated with your current Internet Identity principal.
-                  </p>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full h-12 text-base font-semibold"
-                  disabled={isAssociating}
-                >
-                  {isAssociating ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Associating...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="mr-2 h-5 w-5" />
-                      Associate Email
-                    </>
-                  )}
-                </Button>
-              </form>
-
-              <div className="text-sm text-muted-foreground bg-accent/5 p-4 rounded-lg">
-                <p className="font-semibold mb-2">Next Steps:</p>
-                <ol className="list-decimal list-inside space-y-1">
-                  <li>Associate your email with your Internet Identity</li>
-                  <li>Contact an existing admin to grant you admin rights</li>
-                  <li>Once granted, you'll be able to access the admin panel</li>
-                </ol>
-              </div>
+                </>
+              ) : (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    You are logged in but do not have admin privileges. Please associate your email to request admin access.
+                  </AlertDescription>
+                </Alert>
+              )}
             </>
           ) : (
             <Alert>

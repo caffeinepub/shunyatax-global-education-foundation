@@ -4,9 +4,10 @@ import { Menu, X, Shield, LogIn, UserPlus } from 'lucide-react';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
+import { useGetSiteSettings } from '@/hooks/useSiteSettings';
 import AuthModal from './AuthModal';
 
-const navLinks = [
+const defaultNavLinks = [
   { name: 'Home', path: '/' },
   { name: 'About', path: '/about' },
   { name: 'Programs', path: '/programs' },
@@ -16,6 +17,9 @@ const navLinks = [
   { name: 'Contact', path: '/contact' },
 ];
 
+const defaultLogoPath = '/assets/Untitled design (94)-2.png';
+const defaultLogoAlt = 'Shunyatax Global Education Foundation';
+
 // Unified hover effect classes for all header buttons
 const unifiedHoverClasses = "relative overflow-hidden bg-transparent text-gray-900 border border-transparent hover:border-gray-900/30 hover:shadow-[0_0_15px_rgba(0,0,0,0.1)] transition-all duration-300 group";
 
@@ -24,6 +28,8 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  
+  const { data: siteSettings } = useGetSiteSettings();
   
   // Safe router state access with fallback
   let currentPath = '/';
@@ -65,6 +71,14 @@ export default function Header() {
     }
   };
 
+  // Use backend settings with fallbacks
+  const logoPath = siteSettings?.headerLogo?.getDirectURL() || defaultLogoPath;
+  const logoAlt = defaultLogoAlt;
+  
+  const navLinks = siteSettings?.headerLinks && siteSettings.headerLinks.length > 0
+    ? siteSettings.headerLinks.map(link => ({ name: link.text, path: link.url }))
+    : defaultNavLinks;
+
   return (
     <>
       <header
@@ -91,8 +105,8 @@ export default function Header() {
           >
             <div className="relative">
               <img
-                src="/assets/a_professional_vector_style_logo_design_Y10xaOEOT32zN1Lvad4GEQ_-removebg-preview.png"
-                alt="Shunyatax Global Education Foundation"
+                src={logoPath}
+                alt={logoAlt}
                 className={`w-auto transition-all duration-700 ease-out ${
                   isScrolled ? 'h-24 md:h-28' : 'h-28 md:h-32'
                 } drop-shadow-2xl group-hover:drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]`}
@@ -218,8 +232,8 @@ export default function Header() {
                 {/* Logo in mobile menu - Maximally Enlarged */}
                 <div className="flex items-center justify-center pb-4 border-b border-primary-foreground/15">
                   <img
-                    src="/assets/a_professional_vector_style_logo_design_Y10xaOEOT32zN1Lvad4GEQ_-removebg-preview.png"
-                    alt="Shunyatax Global Education Foundation"
+                    src={logoPath}
+                    alt={logoAlt}
                     className="h-24 w-auto drop-shadow-xl"
                   />
                 </div>

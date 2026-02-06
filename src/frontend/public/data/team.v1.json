@@ -1,0 +1,29 @@
+[
+  {
+    "id": "prerak-baheti_founder",
+    "name": "Prerak Baheti",
+    "role": "Founder & Director",
+    "bio": "Passionate about transforming education and empowering communities through innovative learning solutions.",
+    "photo": null,
+    "displayOrder": 1,
+    "visible": true
+  },
+  {
+    "id": "sarah-johnson_program-director",
+    "name": "Sarah Johnson",
+    "role": "Program Director",
+    "bio": "Leading our educational programs with over 15 years of experience in community development and education.",
+    "photo": null,
+    "displayOrder": 2,
+    "visible": true
+  },
+  {
+    "id": "rajesh-kumar_operations-manager",
+    "name": "Rajesh Kumar",
+    "role": "Operations Manager",
+    "bio": "Ensuring smooth operations and efficient delivery of our programs across all communities we serve.",
+    "photo": null,
+    "displayOrder": 3,
+    "visible": true
+  }
+]

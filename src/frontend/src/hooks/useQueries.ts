@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { Program, TeamMember, ImpactStory, ContactForm, Donation, Event } from '../backend';
+import type { Program, TeamMember, ImpactStory, ContactForm, Donation, Event, GalleryItem } from '../backend';
 
 export function useQueries() {
   const { actor, isFetching } = useActor();
@@ -53,7 +53,7 @@ export function useQueries() {
     });
   };
 
-  // Team Members
+  // Team Members (public - only visible members)
   const useGetAllTeamMembers = () => {
     return useQuery<TeamMember[]>({
       queryKey: ['teamMembers'],
@@ -77,7 +77,7 @@ export function useQueries() {
     });
   };
 
-  // Impact Stories
+  // Impact Stories (public - only published stories)
   const useGetAllImpactStories = () => {
     return useQuery<ImpactStory[]>({
       queryKey: ['impactStories'],
@@ -171,6 +171,53 @@ export function useQueries() {
     });
   };
 
+  // Gallery (public - only visible items)
+  const useGetAllGalleryItems = () => {
+    return useQuery<GalleryItem[]>({
+      queryKey: ['gallery'],
+      queryFn: async () => {
+        try {
+          if (!actor) {
+            console.warn('Actor not available for getAllGalleryItems');
+            return [];
+          }
+          const result = await actor.getAllGalleryItems();
+          return Array.isArray(result) ? result : [];
+        } catch (error) {
+          console.error('Error fetching gallery items:', error);
+          return [];
+        }
+      },
+      enabled: !!actor && !isFetching,
+      retry: 2,
+      retryDelay: 1000,
+      staleTime: 30000,
+    });
+  };
+
+  const useGetGalleryItemsByCategory = (category: string) => {
+    return useQuery<GalleryItem[]>({
+      queryKey: ['gallery', category],
+      queryFn: async () => {
+        try {
+          if (!actor || !category) {
+            console.warn('Actor or category not available');
+            return [];
+          }
+          const result = await actor.getGalleryItemsByCategory(category);
+          return Array.isArray(result) ? result : [];
+        } catch (error) {
+          console.error('Error fetching gallery items by category:', error);
+          return [];
+        }
+      },
+      enabled: !!actor && !isFetching && !!category,
+      retry: 2,
+      retryDelay: 1000,
+      staleTime: 30000,
+    });
+  };
+
   // Contact Form
   const useSubmitContactForm = () => {
     return useMutation({
@@ -233,6 +280,8 @@ export function useQueries() {
     useGetAllEvents,
     useGetUpcomingEvents,
     useGetPastEvents,
+    useGetAllGalleryItems,
+    useGetGalleryItemsByCategory,
     useSubmitContactForm,
     useAddDonation,
   };

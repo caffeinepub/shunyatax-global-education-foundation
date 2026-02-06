@@ -1,0 +1,23 @@
+[
+  {
+    "id": "from-illiteracy-to-entrepreneur",
+    "title": "From Illiteracy to Entrepreneur",
+    "story": "After completing our adult literacy program, Meera started her own tailoring business and now employs three other women from her village.",
+    "image": null,
+    "published": true
+  },
+  {
+    "id": "first-generation-college-graduate",
+    "title": "First Generation College Graduate",
+    "story": "With our scholarship support, Arjun became the first person in his family to attend university. He now works as a software engineer and mentors other students.",
+    "image": null,
+    "published": true
+  },
+  {
+    "id": "village-transformation",
+    "title": "Village Transformation",
+    "story": "Our mobile education unit brought learning to a remote village of 500 people. Today, 95% of children attend school regularly and literacy rates have doubled.",
+    "image": null,
+    "published": true
+  }
+]
