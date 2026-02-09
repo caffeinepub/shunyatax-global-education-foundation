@@ -1,10 +1,38 @@
 {
   "kind": "build_request",
-  "title": "Untitled request",
+  "title": "Hide site header on admin panel routes (/admin-panel/*) only",
   "priority": "normal",
-  "requirements": [],
-  "constraints": [],
-  "nonGoals": [],
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Update the shared public Layout so the global site header is not rendered on admin panel routes (any path that starts with \"/admin-panel\"), while keeping the header visible on all other routes (including public pages and \"/admin\" login).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "recent-messages"
+        ],
+        "quotes": [
+          "admin panel pe hader ko hide kar do only admin penal pe",
+          "build"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When navigating to any /admin-panel/* route (e.g., /admin-panel/dashboard), the global site Header component is not displayed.",
+        "When navigating to public routes like /, /about, /programs, etc., the Header remains displayed exactly as before.",
+        "When navigating to /admin (admin login), the Header remains displayed exactly as before.",
+        "No other admin panel UI elements (AdminLayout mobile header/sidebar) are removed or visually broken by this change."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit any files in frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT.",
+    "Keep all user-facing text in English."
+  ],
+  "nonGoals": [
+    "Do not hide or change the footer behavior unless required to prevent layout breakage.",
+    "Do not change authentication or admin access logic.",
+    "Do not redesign the admin panel UI; only remove the global site header from /admin-panel/* routes."
+  ],
   "imageRequirements": {
     "required": [],
     "edits": []

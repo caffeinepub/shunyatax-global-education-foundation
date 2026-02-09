@@ -1,4 +1,4 @@
-import { Outlet } from '@tanstack/react-router';
+import { Outlet, useLocation } from '@tanstack/react-router';
 import { Component, ErrorInfo, ReactNode, Suspense } from 'react';
 import Header from './Header';
 import Footer from './Footer';
@@ -122,10 +122,13 @@ function SafeOutlet() {
 }
 
 export default function Layout() {
+  const location = useLocation();
+  const isAdminPanel = location.pathname.startsWith('/admin-panel');
+
   return (
     <LayoutErrorBoundary>
       <div className="flex min-h-screen flex-col">
-        <SafeHeader />
+        {!isAdminPanel && <SafeHeader />}
         <main className="flex-1">
           <SafeOutlet />
         </main>
