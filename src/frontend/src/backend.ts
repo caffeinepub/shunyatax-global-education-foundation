@@ -120,7 +120,7 @@ export interface SiteSettings {
     backgroundColor: string;
     footerLinks: Array<SiteSettingsLink>;
     primaryColor: string;
-    headerLogo?: ExternalBlob;
+    logo?: ExternalBlob;
     headerLinks: Array<SiteSettingsLink>;
     socialMediaLinks: Array<SiteSettingsLink>;
     newsletterSignupText: string;
@@ -1366,7 +1366,7 @@ async function from_candid_record_n38(_uploadFile: (file: ExternalBlob) => Promi
     backgroundColor: string;
     footerLinks: Array<_SiteSettingsLink>;
     primaryColor: string;
-    headerLogo: [] | [_ExternalBlob];
+    logo: [] | [_ExternalBlob];
     headerLinks: Array<_SiteSettingsLink>;
     socialMediaLinks: Array<_SiteSettingsLink>;
     newsletterSignupText: string;
@@ -1379,7 +1379,7 @@ async function from_candid_record_n38(_uploadFile: (file: ExternalBlob) => Promi
     backgroundColor: string;
     footerLinks: Array<SiteSettingsLink>;
     primaryColor: string;
-    headerLogo?: ExternalBlob;
+    logo?: ExternalBlob;
     headerLinks: Array<SiteSettingsLink>;
     socialMediaLinks: Array<SiteSettingsLink>;
     newsletterSignupText: string;
@@ -1393,7 +1393,7 @@ async function from_candid_record_n38(_uploadFile: (file: ExternalBlob) => Promi
         backgroundColor: value.backgroundColor,
         footerLinks: value.footerLinks,
         primaryColor: value.primaryColor,
-        headerLogo: record_opt_to_undefined(await from_candid_opt_n13(_uploadFile, _downloadFile, value.headerLogo)),
+        logo: record_opt_to_undefined(await from_candid_opt_n13(_uploadFile, _downloadFile, value.logo)),
         headerLinks: value.headerLinks,
         socialMediaLinks: value.socialMediaLinks,
         newsletterSignupText: value.newsletterSignupText,
@@ -1471,7 +1471,7 @@ async function to_candid_record_n40(_uploadFile: (file: ExternalBlob) => Promise
     backgroundColor: string;
     footerLinks: Array<SiteSettingsLink>;
     primaryColor: string;
-    headerLogo?: ExternalBlob;
+    logo?: ExternalBlob;
     headerLinks: Array<SiteSettingsLink>;
     socialMediaLinks: Array<SiteSettingsLink>;
     newsletterSignupText: string;
@@ -1484,7 +1484,7 @@ async function to_candid_record_n40(_uploadFile: (file: ExternalBlob) => Promise
     backgroundColor: string;
     footerLinks: Array<_SiteSettingsLink>;
     primaryColor: string;
-    headerLogo: [] | [_ExternalBlob];
+    logo: [] | [_ExternalBlob];
     headerLinks: Array<_SiteSettingsLink>;
     socialMediaLinks: Array<_SiteSettingsLink>;
     newsletterSignupText: string;
@@ -1498,7 +1498,7 @@ async function to_candid_record_n40(_uploadFile: (file: ExternalBlob) => Promise
         backgroundColor: value.backgroundColor,
         footerLinks: value.footerLinks,
         primaryColor: value.primaryColor,
-        headerLogo: value.headerLogo ? candid_some(await to_candid_ExternalBlob_n9(_uploadFile, _downloadFile, value.headerLogo)) : candid_none(),
+        logo: value.logo ? candid_some(await to_candid_ExternalBlob_n9(_uploadFile, _downloadFile, value.logo)) : candid_none(),
         headerLinks: value.headerLinks,
         socialMediaLinks: value.socialMediaLinks,
         newsletterSignupText: value.newsletterSignupText,

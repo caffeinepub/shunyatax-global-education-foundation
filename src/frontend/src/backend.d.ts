@@ -38,7 +38,7 @@ export interface SiteSettings {
     backgroundColor: string;
     footerLinks: Array<SiteSettingsLink>;
     primaryColor: string;
-    headerLogo?: ExternalBlob;
+    logo?: ExternalBlob;
     headerLinks: Array<SiteSettingsLink>;
     socialMediaLinks: Array<SiteSettingsLink>;
     newsletterSignupText: string;

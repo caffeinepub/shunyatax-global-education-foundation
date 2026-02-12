@@ -1,14 +1,14 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
-  "summary": "Website/admin panel project with (1) a request to replace the header and footer logo on every page with a single uploaded image, and (2) a request to hide the header only on the admin panel.",
+  "projectStateVersion": 3,
+  "summary": "Website update: replace Home page Hero section images with the last 3 uploaded images and rebuild/deploy a new draft.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-shared-public-layout-so-the-global-site-header-is-not-rendered-on-admin-panel-routes-any-path-that-starts-with-admin-panel-while-keeping-the-header-visible-on-all-other-routes-including-public-pages-and-admin-login",
-      "title": "Update the shared public Layout so the global site header is not rendered on admin panel routes (any path that starts with \"/admin-panel\"), while keeping the header visible on all other routes (including public pages and \"/admin\" login).",
+      "id": "feature-replace-the-three-home-page-hero-section-images-with-the-last-3-images-the-user-uploaded-replacing-the-currently-hardcoded-heroimages-sources-in-both-the-icp-home-page-and-the-non-icp-home-page",
+      "title": "Replace the three Home page hero section images with the last 3 images the user uploaded, replacing the currently hardcoded `heroImages` sources in both the ICP Home page and the non-ICP Home page.",
       "reqIds": [
         "REQ-1"
       ],
@@ -18,18 +18,13 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Replace header and footer logos on every page with the uploaded logo image (site-wide).",
+      "summary": "Replace Home page Hero section images with the last 3 uploaded images, then rebuild/deploy.",
       "reqIds": [],
-      "status": "in_progress"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Hide the header only on the admin panel (do not affect the main website).",
-      "reqIds": [],
-      "status": "in_progress"
+      "status": "pending"
     }
   ],
-  "projectName": "Untitled request",
+  "gameProjectType": "none",
+  "projectName": "Replace Home page hero images with the last 3 uploaded images",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

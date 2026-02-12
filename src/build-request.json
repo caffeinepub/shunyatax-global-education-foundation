@@ -1,37 +1,36 @@
 {
   "kind": "build_request",
-  "title": "Hide site header on admin panel routes (/admin-panel/*) only",
+  "title": "Replace Home page hero images with the last 3 uploaded images",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the shared public Layout so the global site header is not rendered on admin panel routes (any path that starts with \"/admin-panel\"), while keeping the header visible on all other routes (including public pages and \"/admin\" login).",
+      "text": "Replace the three Home page hero section images with the last 3 images the user uploaded, replacing the currently hardcoded `heroImages` sources in both the ICP Home page and the non-ICP Home page.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-messages"
+          "msg-1"
         ],
         "quotes": [
-          "admin panel pe hader ko hide kar do only admin penal pe",
-          "build"
+          "mene jo last 3 images de thi un ko hero section vale image se replace kar do",
+          "build karo"
         ]
       },
       "acceptanceCriteria": [
-        "When navigating to any /admin-panel/* route (e.g., /admin-panel/dashboard), the global site Header component is not displayed.",
-        "When navigating to public routes like /, /about, /programs, etc., the Header remains displayed exactly as before.",
-        "When navigating to /admin (admin login), the Header remains displayed exactly as before.",
-        "No other admin panel UI elements (AdminLayout mobile header/sidebar) are removed or visually broken by this change."
+        "`frontend/src/pages/HomePage.tsx` no longer references the previous hero image paths (`/assets/Screenshot%202025-12-24%20153629.jpg`, `/assets/e00003_42eb4111f5ba46b39436fec811df105d~mv2.avif`, `/assets/e00003_b89bd166a314421cbcb505ffec9c884c~mv2.avif`) in the `heroImages` array.",
+        "`frontend/src/nonicp/pages/HomePage.jsx` no longer references the previous hero image paths in the `heroImages` array.",
+        "The hero section still renders exactly 3 images in the same layout/animations (1 large top image, 2 smaller bottom images) and uses the newly provided last-3 uploaded images for those three slots.",
+        "No broken images (no 404s) in the hero section for either ICP or non-ICP builds."
       ]
     }
   ],
   "constraints": [
-    "Do not edit any files in frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT.",
-    "Keep all user-facing text in English."
+    "Frontend immutable paths (e.g., `frontend/src/main.tsx`, `frontend/src/hooks/useInternetIdentity.ts(x)`, `frontend/src/hooks/useActor.ts`, `frontend/src/components/ui`) must not be edited.",
+    "Keep all backend logic in the single Motoko actor (`backend/main.mo`); no backend changes are required for this request."
   ],
   "nonGoals": [
-    "Do not hide or change the footer behavior unless required to prevent layout breakage.",
-    "Do not change authentication or admin access logic.",
-    "Do not redesign the admin panel UI; only remove the global site header from /admin-panel/* routes."
+    "Do not change any hero section copy, layout structure, animations, or styling beyond updating the image sources.",
+    "Do not implement new image upload functionality or admin tooling for managing hero images."
   ],
   "imageRequirements": {
     "required": [],

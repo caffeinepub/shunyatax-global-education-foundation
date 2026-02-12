@@ -19,7 +19,7 @@ actor {
 
   // Site Settings
   public type SiteSettings = {
-    headerLogo : ?Storage.ExternalBlob;
+    logo : ?Storage.ExternalBlob;
     headerLinks : [SiteSettingsLink];
     headerSlogan : Text;
     footerText : Text;
@@ -41,7 +41,7 @@ actor {
   };
 
   var siteSettings : SiteSettings = {
-    headerLogo = null;
+    logo = null;
     headerLinks = [];
     headerSlogan = "Helping Hands, Changing Lives";
     footerText = "Together, we can make a difference. Supporting children, families, and communities.";
@@ -950,3 +950,4 @@ actor {
     );
   };
 };
+

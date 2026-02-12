@@ -1,214 +1,262 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { Loader2, LogIn, Mail, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { useAdminRoleManagement } from '@/hooks/useAdminRoleManagement';
 import { normalizeAuthError } from '@/utils/authorizationErrors';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, LogIn, UserPlus, Shield, CheckCircle2 } from 'lucide-react';
+import { CANONICAL_LOGO_PATH, CANONICAL_LOGO_ALT } from '@/constants/logo';
+
+type WorkflowStep = 'login' | 'register-email' | 'associate-email' | 'grant-admin' | 'complete';
 
 export default function AdminLogin() {
-  const { login, identity, isLoggingIn, isInitializing } = useInternetIdentity();
-  const { isAuthenticated, isAdmin, isLoading: accessLoading } = useAdminAccess();
-  const { associateEmail } = useAdminRoleManagement();
+  const navigate = useNavigate();
+  const { login, identity, loginStatus, isInitializing } = useInternetIdentity();
+  const { isAdmin, isLoading: isCheckingAdmin } = useAdminAccess();
   
+  const [currentStep, setCurrentStep] = useState<WorkflowStep>('login');
   const [email, setEmail] = useState('');
-  const [isAssociating, setIsAssociating] = useState(false);
-  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const { registerEmail, associateEmail, grantAdminByEmail } = useAdminRoleManagement();
 
   // Redirect if already admin
   useEffect(() => {
-    if (isAuthenticated && isAdmin && !accessLoading) {
-      window.location.href = '/admin-panel/dashboard';
+    if (identity && isAdmin && !isCheckingAdmin) {
+      navigate({ to: '/admin-panel' });
     }
-  }, [isAuthenticated, isAdmin, accessLoading]);
+  }, [identity, isAdmin, isCheckingAdmin, navigate]);
 
-  // Show email form after successful authentication if not admin
+  // Auto-advance workflow after successful login
   useEffect(() => {
-    if (isAuthenticated && !isAdmin && !accessLoading) {
-      setShowEmailForm(true);
+    if (identity && currentStep === 'login' && !isAdmin && !isCheckingAdmin) {
+      setCurrentStep('register-email');
     }
-  }, [isAuthenticated, isAdmin, accessLoading]);
+  }, [identity, currentStep, isAdmin, isCheckingAdmin]);
 
   const handleLogin = async () => {
     try {
+      setError('');
       await login();
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error(normalizeAuthError(error));
+    } catch (err: any) {
+      setError(err.message || 'Failed to login with Internet Identity');
     }
   };
 
-  const handleAssociateEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !email.includes('@')) {
-      toast.error('Please enter a valid email address');
+  const handleRegisterEmail = async () => {
+    if (!email.trim()) {
+      setError('Please enter your email address');
       return;
     }
 
-    if (!identity) {
-      toast.error('Please log in with Internet Identity first');
-      return;
-    }
-
-    setIsAssociating(true);
     try {
-      await associateEmail.mutateAsync({
-        email,
-        principal: identity.getPrincipal(),
-      });
-      toast.success('Email associated successfully! An admin can now grant you access.');
-      setEmail('');
-      setShowEmailForm(false);
-    } catch (error) {
-      console.error('Email association error:', error);
-      toast.error(normalizeAuthError(error));
-    } finally {
-      setIsAssociating(false);
+      setError('');
+      setSuccessMessage('');
+      await registerEmail.mutateAsync(email);
+      setSuccessMessage('Email registered successfully!');
+      setCurrentStep('associate-email');
+    } catch (err: any) {
+      setError(normalizeAuthError(err));
     }
   };
 
-  const isLoading = isInitializing || accessLoading;
+  const handleAssociateEmail = async () => {
+    if (!identity || !email.trim()) {
+      setError('Missing identity or email');
+      return;
+    }
+
+    try {
+      setError('');
+      setSuccessMessage('');
+      await associateEmail.mutateAsync({ email, principal: identity.getPrincipal() });
+      setSuccessMessage('Email associated with your principal!');
+      setCurrentStep('grant-admin');
+    } catch (err: any) {
+      setError(normalizeAuthError(err));
+    }
+  };
+
+  const handleGrantAdmin = async () => {
+    if (!identity || !email.trim()) {
+      setError('Missing identity or email');
+      return;
+    }
+
+    try {
+      setError('');
+      setSuccessMessage('');
+      await grantAdminByEmail.mutateAsync({ email, emailPrincipal: identity.getPrincipal() });
+      setSuccessMessage('Admin role granted successfully!');
+      setCurrentStep('complete');
+      setTimeout(() => {
+        navigate({ to: '/admin-panel' });
+      }, 2000);
+    } catch (err: any) {
+      setError(normalizeAuthError(err));
+    }
+  };
+
+  const isLoading = 
+    isInitializing || 
+    loginStatus === 'logging-in' || 
+    isCheckingAdmin ||
+    registerEmail.isPending ||
+    associateEmail.isPending ||
+    grantAdminByEmail.isPending;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-gradient-mid/10 to-gradient-end/10">
-      <Card className="w-full max-w-md border-border/50 bg-card/95 backdrop-blur-sm shadow-2xl">
-        <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto mb-4">
-            <img 
-              src="/assets/a_professional_vector_style_logo_design_Y10xaOEOT32zN1Lvad4GEQ_-removebg-preview.png" 
-              alt="Shunyatax Global Education Foundation" 
-              className="h-20 w-auto mx-auto"
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/5 via-gradient-mid/5 to-gradient-end/5 p-4">
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardHeader className="space-y-4 text-center">
+          <div className="flex justify-center">
+            <img
+              src={CANONICAL_LOGO_PATH}
+              alt={CANONICAL_LOGO_ALT}
+              className="h-20 w-auto drop-shadow-xl"
             />
           </div>
-          <CardTitle className="text-3xl font-bold text-foreground">Admin Access</CardTitle>
-          <CardDescription className="text-base">
-            {isAuthenticated 
-              ? 'Manage your admin access' 
-              : 'Log in with Internet Identity to access the admin panel'}
+          <CardTitle className="text-2xl font-bold">Admin Access</CardTitle>
+          <CardDescription>
+            {currentStep === 'login' && 'Login with Internet Identity to continue'}
+            {currentStep === 'register-email' && 'Step 1: Register your email'}
+            {currentStep === 'associate-email' && 'Step 2: Associate email with your principal'}
+            {currentStep === 'grant-admin' && 'Step 3: Grant admin role'}
+            {currentStep === 'complete' && 'Setup complete!'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {!isAuthenticated ? (
-            <>
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Step 1: Authenticate with Internet Identity to begin the admin access process.
-                </AlertDescription>
-              </Alert>
-              
-              <Button
-                onClick={handleLogin}
-                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-primary via-gradient-mid to-gradient-end hover:shadow-glow-lg transition-all duration-300"
-                disabled={isLoggingIn || isLoading}
-              >
-                {isLoggingIn || isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    {isLoading ? 'Loading...' : 'Logging in...'}
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="mr-2 h-5 w-5" />
-                    Login with Internet Identity
-                  </>
-                )}
-              </Button>
-            </>
-          ) : !isAdmin ? (
-            <>
-              {showEmailForm ? (
-                <>
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Step 2: Associate your email address with your Internet Identity so an admin can grant you access.
-                    </AlertDescription>
-                  </Alert>
 
-                  <form onSubmit={handleAssociateEmail} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-foreground font-semibold">
-                        Email Address
-                      </Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="your.email@example.com"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="pl-10 h-12 border-border/50 focus:border-primary focus:ring-primary"
-                          disabled={isAssociating}
-                          required
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        This email will be associated with your current Internet Identity principal.
-                      </p>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full h-12 text-base font-semibold"
-                      disabled={isAssociating}
-                    >
-                      {isAssociating ? (
-                        <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          Associating...
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="mr-2 h-5 w-5" />
-                          Associate Email
-                        </>
-                      )}
-                    </Button>
-                  </form>
-
-                  <div className="text-sm text-muted-foreground bg-accent/5 p-4 rounded-lg">
-                    <p className="font-semibold mb-2">Next Steps:</p>
-                    <ol className="list-decimal list-inside space-y-1">
-                      <li>Associate your email with your Internet Identity</li>
-                      <li>Contact an existing admin to grant you admin rights</li>
-                      <li>Once granted, you'll be able to access the admin panel</li>
-                    </ol>
-                  </div>
-                </>
-              ) : (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    You are logged in but do not have admin privileges. Please associate your email to request admin access.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </>
-          ) : (
-            <Alert>
-              <CheckCircle2 className="h-4 w-4" />
-              <AlertDescription>
-                You have admin access. Redirecting to dashboard...
-              </AlertDescription>
+        <CardContent className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
-          <div className="text-center pt-4">
-            <a 
-              href="/" 
-              className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+          {successMessage && (
+            <Alert className="border-green-500 bg-green-50 text-green-900">
+              <CheckCircle2 className="h-4 w-4" />
+              <AlertDescription>{successMessage}</AlertDescription>
+            </Alert>
+          )}
+
+          {currentStep === 'login' && (
+            <Button
+              onClick={handleLogin}
+              disabled={isLoading}
+              className="w-full"
+              size="lg"
             >
-              ← Back to Website
-            </a>
-          </div>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Connecting...
+                </>
+              ) : (
+                <>
+                  <LogIn className="mr-2 h-5 w-5" />
+                  Login with Internet Identity
+                </>
+              )}
+            </Button>
+          )}
+
+          {currentStep === 'register-email' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <Button
+                onClick={handleRegisterEmail}
+                disabled={isLoading || !email.trim()}
+                className="w-full"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registering...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Register Email
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {currentStep === 'associate-email' && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Email: <strong>{email}</strong>
+              </p>
+              <Button
+                onClick={handleAssociateEmail}
+                disabled={isLoading}
+                className="w-full"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Associating...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Associate Email with Principal
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {currentStep === 'grant-admin' && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Email: <strong>{email}</strong>
+              </p>
+              <Button
+                onClick={handleGrantAdmin}
+                disabled={isLoading}
+                className="w-full"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Granting...
+                  </>
+                ) : (
+                  <>
+                    <Shield className="mr-2 h-4 w-4" />
+                    Grant Admin Role
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {currentStep === 'complete' && (
+            <div className="space-y-4 text-center">
+              <CheckCircle2 className="mx-auto h-16 w-16 text-green-500" />
+              <p className="text-lg font-semibold">Admin access granted!</p>
+              <p className="text-sm text-muted-foreground">Redirecting to admin panel...</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

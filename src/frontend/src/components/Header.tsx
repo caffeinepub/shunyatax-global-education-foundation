@@ -4,8 +4,8 @@ import { Menu, X, Shield, LogIn, UserPlus } from 'lucide-react';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
-import { useGetSiteSettings } from '@/hooks/useSiteSettings';
 import AuthModal from './AuthModal';
+import { CANONICAL_LOGO_PATH, CANONICAL_LOGO_ALT } from '@/constants/logo';
 
 const defaultNavLinks = [
   { name: 'Home', path: '/' },
@@ -17,9 +17,6 @@ const defaultNavLinks = [
   { name: 'Contact', path: '/contact' },
 ];
 
-const defaultLogoPath = '/assets/Untitled design (94)-2.png';
-const defaultLogoAlt = 'Shunyatax Global Education Foundation';
-
 // Unified hover effect classes for all header buttons
 const unifiedHoverClasses = "relative overflow-hidden bg-transparent text-gray-900 border border-transparent hover:border-gray-900/30 hover:shadow-[0_0_15px_rgba(0,0,0,0.1)] transition-all duration-300 group";
 
@@ -28,8 +25,6 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  
-  const { data: siteSettings } = useGetSiteSettings();
   
   // Safe router state access with fallback
   let currentPath = '/';
@@ -71,21 +66,17 @@ export default function Header() {
     }
   };
 
-  // Use backend settings with fallbacks
-  const logoPath = siteSettings?.headerLogo?.getDirectURL() || defaultLogoPath;
-  const logoAlt = defaultLogoAlt;
-  
-  const navLinks = siteSettings?.headerLinks && siteSettings.headerLinks.length > 0
-    ? siteSettings.headerLinks.map(link => ({ name: link.text, path: link.url }))
-    : defaultNavLinks;
+  // Always use canonical logo path
+  const logoPath = CANONICAL_LOGO_PATH;
+  const logoAlt = CANONICAL_LOGO_ALT;
 
   return (
     <>
       <header
         className={`fixed top-0 z-50 w-full transition-all duration-700 ease-out ${
           isScrolled
-            ? 'h-28 bg-gradient-to-r from-primary/95 via-gradient-mid/95 to-gradient-end/95 shadow-glow-lg backdrop-blur-xl border-b border-primary/10'
-            : 'h-36 bg-gradient-to-r from-primary/98 via-gradient-mid/98 to-gradient-end/98 shadow-xl'
+            ? 'h-32 bg-gradient-to-r from-primary/95 via-gradient-mid/95 to-gradient-end/95 shadow-glow-lg backdrop-blur-xl border-b border-primary/10'
+            : 'h-40 bg-gradient-to-r from-primary/98 via-gradient-mid/98 to-gradient-end/98 shadow-xl'
         }`}
       >
         {/* Animated gradient overlay with subtle color transitions */}
@@ -98,7 +89,7 @@ export default function Header() {
         }} />
 
         <div className="container relative mx-auto flex h-full items-center justify-between px-4 lg:px-8">
-          {/* Logo Section - Maximally Enlarged for Exceptional Brand Presence */}
+          {/* Logo Section - Significantly Enlarged with Transparent Background */}
           <Link 
             to="/" 
             className="group flex items-center transition-all duration-500 hover:scale-105"
@@ -107,8 +98,8 @@ export default function Header() {
               <img
                 src={logoPath}
                 alt={logoAlt}
-                className={`w-auto transition-all duration-700 ease-out ${
-                  isScrolled ? 'h-24 md:h-28' : 'h-28 md:h-32'
+                className={`w-auto object-contain transition-all duration-700 ease-out ${
+                  isScrolled ? 'h-28 md:h-32' : 'h-32 md:h-36'
                 } drop-shadow-2xl group-hover:drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]`}
               />
               {/* Animated glow effect on hover */}
@@ -118,7 +109,7 @@ export default function Header() {
 
           {/* Desktop Navigation - All buttons with unified styling */}
           <nav className="hidden items-center gap-1 md:flex">
-            {navLinks.map((link, index) => (
+            {defaultNavLinks.map((link, index) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -229,16 +220,16 @@ export default function Header() {
               <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-secondary/10 pointer-events-none" />
               
               <div className="relative flex flex-col gap-6 pt-12">
-                {/* Logo in mobile menu - Maximally Enlarged */}
+                {/* Logo in mobile menu - Enlarged with proper spacing */}
                 <div className="flex items-center justify-center pb-4 border-b border-primary-foreground/15">
                   <img
                     src={logoPath}
                     alt={logoAlt}
-                    className="h-24 w-auto drop-shadow-xl"
+                    className="h-28 w-auto object-contain drop-shadow-xl"
                   />
                 </div>
                 
-                {navLinks.map((link, index) => (
+                {defaultNavLinks.map((link, index) => (
                   <Link
                     key={link.path}
                     to={link.path}

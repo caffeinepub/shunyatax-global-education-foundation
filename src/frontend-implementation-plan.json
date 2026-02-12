@@ -1,22 +1,42 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Conditionally hide global site header on /admin-panel/* routes",
+  "title": "Update Home hero images to the last 3 uploaded images (ICP + non-ICP)",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Update the shared public Layout to not render the global Header on any route that starts with \"/admin-panel\", while preserving header behavior everywhere else (including \"/admin\" login).",
+      "summary": "Replace hardcoded Home hero image sources in both ICP and non-ICP Home pages with the last 3 uploaded images while keeping the existing 3-image layout/animations unchanged.",
       "acceptanceCriteria": [
-        "When navigating to any /admin-panel/* route (e.g., /admin-panel/dashboard), the global site Header component is not displayed.",
-        "When navigating to public routes like /, /about, /programs, etc., the Header remains displayed exactly as before.",
-        "When navigating to /admin (admin login), the Header remains displayed exactly as before.",
-        "No other admin panel UI elements (AdminLayout mobile header/sidebar) are removed or visually broken by this change."
+        "`frontend/src/pages/HomePage.tsx` no longer references the previous hero image paths (`/assets/Screenshot%202025-12-24%20153629.jpg`, `/assets/e00003_42eb4111f5ba46b39436fec811df105d~mv2.avif`, `/assets/e00003_b89bd166a314421cbcb505ffec9c884c~mv2.avif`) in the `heroImages` array.",
+        "`frontend/src/nonicp/pages/HomePage.jsx` no longer references the previous hero image paths in the `heroImages` array.",
+        "The hero section still renders exactly 3 images in the same layout/animations (1 large top image, 2 smaller bottom images) and uses the newly provided last-3 uploaded images for those three slots.",
+        "No broken images (no 404s) in the hero section for either ICP or non-ICP builds."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/Layout.tsx",
+          "path": "frontend/public/assets/image-6.png",
+          "operation": "create",
+          "description": "Add the uploaded image `image-6.png` to the public assets directory so it can be referenced by the Home hero section without 404s."
+        },
+        {
+          "path": "frontend/public/assets/image-7.png",
+          "operation": "create",
+          "description": "Add the uploaded image `image-7.png` to the public assets directory so it can be referenced by the Home hero section without 404s."
+        },
+        {
+          "path": "frontend/public/assets/image-8.png",
+          "operation": "create",
+          "description": "Add the uploaded image `image-8.png` to the public assets directory so it can be referenced by the Home hero section without 404s."
+        },
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Use TanStack Router location state (e.g., via useRouterState/useLocation) to detect the current pathname and conditionally skip rendering the existing SafeHeader wrapper when the path starts with \"/admin-panel\"; keep footer and the rest of the layout unchanged to avoid breaking AdminLayout UI."
+          "description": "Update the `heroImages` array to use `/assets/image-6.png`, `/assets/image-7.png`, and `/assets/image-8.png` (in the existing 3 slots) while preserving the current layout, animation delays, and all other hero section structure/styling."
+        },
+        {
+          "path": "frontend/src/nonicp/pages/HomePage.jsx",
+          "operation": "modify",
+          "description": "Update the `heroImages` array to use `/assets/image-6.png`, `/assets/image-7.png`, and `/assets/image-8.png` (in the existing 3 slots) while preserving the current layout, animation delays, and all other hero section structure/styling."
         }
       ]
     }

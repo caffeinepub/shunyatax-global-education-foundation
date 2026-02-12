@@ -36,17 +36,17 @@ const stats = [
 
 const heroImages = [
   {
-    src: '/assets/Screenshot%202025-12-24%20153629.jpg',
+    src: '/assets/image-6.png',
     alt: 'Foundation Activities',
     delay: '0ms',
   },
   {
-    src: '/assets/e00003_42eb4111f5ba46b39436fec811df105d~mv2.avif',
+    src: '/assets/image-7.png',
     alt: 'Educational Programs',
     delay: '200ms',
   },
   {
-    src: '/assets/e00003_b89bd166a314421cbcb505ffec9c884c~mv2.avif',
+    src: '/assets/image-8.png',
     alt: 'Community Engagement',
     delay: '400ms',
   },
@@ -368,28 +368,13 @@ export default function HomePage() {
                       className="h-full w-full object-cover transition-all duration-1000 group-hover:scale-115 group-hover:brightness-110"
                     />
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent transition-opacity duration-700 group-hover:from-black/85" />
-                  <div className="absolute inset-0 ring-1 ring-primary/20 rounded-3xl group-hover:ring-primary/40 transition-all duration-700" />
-                  
-                  {/* Caption overlay with enhanced animation */}
-                  <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-3 group-hover:translate-y-0 transition-all duration-500">
-                    <h3 className="text-3xl font-extrabold text-white mb-3 drop-shadow-2xl tracking-tight">
-                      {image.caption}
-                    </h3>
-                    <p className="text-white/95 text-base drop-shadow-lg font-medium">
-                      {image.alt}
-                    </p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-primary/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-700" />
+                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                    <h3 className="text-2xl font-bold mb-2 drop-shadow-lg">{image.caption}</h3>
+                    <p className="text-sm text-white/90 drop-shadow-md">{image.alt}</p>
                   </div>
-                  
-                  {/* Interactive glow effect on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-accent/20 via-transparent to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl" />
+                  <div className="absolute inset-0 ring-2 ring-primary/20 rounded-3xl group-hover:ring-primary/40 transition-all duration-700" />
                 </div>
-
-                {/* Floating decorative element with enhanced glow */}
-                <div 
-                  className="absolute -z-10 w-full h-full top-6 left-6 rounded-3xl bg-gradient-to-br from-primary/15 to-accent/15 blur-2xl float-animation opacity-60 group-hover:opacity-100 transition-opacity duration-700"
-                  style={{ animationDelay: `${index * 0.5 + 0.3}s` }}
-                />
               </div>
             ))}
           </div>
@@ -399,33 +384,37 @@ export default function HomePage() {
       {/* Gentle pastel gradient separator */}
       <div className="h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent" />
 
-      {/* Features Section with Enhanced Card Animations and Hover Effects */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-background via-secondary/35 to-background py-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,oklch(var(--primary)/0.05),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,oklch(var(--accent)/0.05),transparent_50%)]" />
-        
+      {/* Features Section with Enhanced Card Animations */}
+      <section className="bg-background py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(var(--accent)/0.03),transparent_70%)]" />
         <div className="container relative mx-auto px-4">
           <div className="animate-on-scroll mb-20 text-center">
             <h2 className="mb-6 text-4xl font-extrabold text-foreground md:text-5xl lg:text-6xl tracking-tight">Why Choose Us</h2>
             <p className="mx-auto max-w-3xl text-lg md:text-xl text-muted-foreground leading-relaxed">
-              We are committed to making a lasting difference in the lives of students and communities worldwide.
+              We combine passion, expertise, and dedication to create lasting change in communities worldwide.
             </p>
           </div>
+
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className="animate-on-scroll group border-border/50 bg-card/80 backdrop-blur-sm transition-all duration-700 hover:-translate-y-6 hover:shadow-glow-lg hover:border-primary/50 hover:bg-card/95"
+                className="animate-on-scroll group relative overflow-hidden border-2 border-primary/10 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:border-primary/30 hover:shadow-glow-lg hover:-translate-y-3"
                 style={{ animationDelay: `${index * 120}ms` }}
               >
-                <CardHeader>
-                  <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-accent/15 text-primary transition-all duration-500 group-hover:scale-125 group-hover:rotate-6 group-hover:shadow-glow">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                <CardHeader className="relative">
+                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 text-primary transition-all duration-500 group-hover:scale-125 group-hover:rotate-6 group-hover:shadow-glow">
                     <feature.icon className="h-8 w-8" />
                   </div>
-                  <CardTitle className="text-2xl font-bold">{feature.title}</CardTitle>
+                  <CardTitle className="text-2xl font-bold transition-colors duration-300 group-hover:text-primary">
+                    {feature.title}
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <CardDescription className="leading-relaxed text-base">{feature.description}</CardDescription>
+                <CardContent className="relative">
+                  <CardDescription className="text-base leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
                 </CardContent>
               </Card>
             ))}
@@ -434,25 +423,26 @@ export default function HomePage() {
       </section>
 
       {/* Gentle pastel gradient separator */}
-      <div className="h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
+      <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
 
-      {/* CTA Section with Enhanced Gradient Animation and Premium Button Effects */}
-      <section className="relative overflow-hidden py-28 text-primary-foreground">
-        <div className="absolute inset-0 bg-gradient-to-r from-gradient-start via-gradient-mid to-gradient-end gradient-animate opacity-95" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,oklch(var(--accent)/0.15),transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,oklch(var(--primary)/0.12),transparent_60%)]" />
+      {/* CTA Section with Enhanced Gradient Background */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/15 via-accent/10 to-primary/15 py-24">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,oklch(var(--primary)/0.08),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,oklch(var(--accent)/0.08),transparent_50%)]" />
         
-        <div className="container relative mx-auto px-4 text-center">
-          <div className="animate-on-scroll mx-auto max-w-4xl space-y-8">
-            <h2 className="text-4xl font-extrabold md:text-5xl lg:text-6xl tracking-tight">Join Us in Making a Difference</h2>
-            <p className="text-xl md:text-2xl text-primary-foreground/85 leading-relaxed font-medium">
-              Your support can transform lives and create opportunities for those who need it most. Together, we can
-              build a brighter future through education.
+        <div className="container relative mx-auto px-4">
+          <div className="animate-on-scroll mx-auto max-w-4xl text-center">
+            <h2 className="mb-8 text-4xl font-extrabold text-foreground md:text-5xl lg:text-6xl tracking-tight">
+              Join Us in Making a Difference
+            </h2>
+            <p className="mb-12 text-lg md:text-xl text-muted-foreground leading-relaxed">
+              Your support can transform lives and create opportunities for those who need it most.
+              Together, we can build a brighter future through education.
             </p>
-            <div className="flex flex-col items-center justify-center gap-6 sm:flex-row pt-4">
+            <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
               <Link to="/donate">
-                <Button size="lg" className="group relative overflow-hidden bg-accent text-accent-foreground hover:bg-accent/90 shadow-accent-glow hover:shadow-glow-lg transition-all duration-500 hover:scale-110 hover:-translate-y-2 px-10 py-7 text-xl font-bold">
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                <Button size="lg" className="group relative overflow-hidden bg-accent text-accent-foreground hover:bg-accent/90 shadow-accent-glow hover:shadow-glow-lg transition-all duration-500 hover:scale-110 hover:-translate-y-1 px-10 py-7 text-xl font-bold">
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   <span className="relative">Donate Now</span>
                   <Heart className="ml-3 h-6 w-6 transition-transform group-hover:scale-125" />
                 </Button>
@@ -461,9 +451,9 @@ export default function HomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="relative overflow-hidden border-2 border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground backdrop-blur-md hover:bg-primary-foreground/20 hover:border-primary-foreground/50 transition-all duration-500 hover:scale-105 hover:-translate-y-2 px-10 py-7 text-xl font-bold group"
+                  className="relative overflow-hidden border-2 border-primary/40 bg-background/60 backdrop-blur-md hover:bg-background/80 hover:border-primary/60 transition-all duration-500 hover:scale-105 hover:-translate-y-1 px-10 py-7 text-xl font-bold group"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                   <span className="relative">Get in Touch</span>
                 </Button>
               </Link>

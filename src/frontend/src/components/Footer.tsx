@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { SiFacebook, SiX, SiInstagram, SiLinkedin, SiYoutube } from 'react-icons/si';
 import { Heart, Mail, Phone, MapPin } from 'lucide-react';
-import { useGetSiteSettings } from '@/hooks/useSiteSettings';
+import { CANONICAL_LOGO_PATH, CANONICAL_LOGO_ALT } from '@/constants/logo';
 
 const defaultFooterLinks = {
   quickLinks: [
@@ -29,96 +29,80 @@ const defaultSocialLinks = [
     icon: SiX, 
     href: 'https://x.com/shunyatax', 
     label: 'X (Twitter)', 
-    color: 'text-[#1DA1F2]', 
-    hoverColor: 'hover:text-[#0c85d0]' 
+    color: 'text-[#000000]', 
+    hoverColor: 'hover:text-[#333333]' 
   },
   { 
     icon: SiInstagram, 
-    href: 'https://www.instagram.com/shunyatax_global/', 
+    href: 'https://www.instagram.com/shunyatax/', 
     label: 'Instagram', 
     color: 'text-[#E4405F]', 
-    hoverColor: 'hover:text-[#d62954]' 
+    hoverColor: 'hover:text-[#c13584]' 
   },
   { 
     icon: SiLinkedin, 
-    href: 'https://www.linkedin.com/in/c-a-prerak-baheti-b0b35537/', 
+    href: 'https://www.linkedin.com/company/shunyatax/', 
     label: 'LinkedIn', 
     color: 'text-[#0A66C2]', 
     hoverColor: 'hover:text-[#004182]' 
   },
   { 
     icon: SiYoutube, 
-    href: 'https://www.youtube.com/@shunyataxglobal', 
+    href: 'https://www.youtube.com/@shunyatax', 
     label: 'YouTube', 
     color: 'text-[#FF0000]', 
     hoverColor: 'hover:text-[#cc0000]' 
   },
 ];
 
-const defaultLogoPath = '/assets/Untitled design (94)-2.png';
-const defaultAboutText = 'Empowering communities through education and creating opportunities for a brighter future.';
-
 export default function Footer() {
-  const { data: siteSettings } = useGetSiteSettings();
+  // Always use canonical logo path
+  const logoPath = CANONICAL_LOGO_PATH;
+  const logoAlt = CANONICAL_LOGO_ALT;
 
-  // Use backend settings with fallbacks
-  const logoPath = siteSettings?.headerLogo?.getDirectURL() || defaultLogoPath;
-  const aboutText = siteSettings?.footerText || defaultAboutText;
-  
-  const footerLinks = siteSettings?.footerLinks && siteSettings.footerLinks.length > 0
-    ? siteSettings.footerLinks.map(link => ({ name: link.text, path: link.url }))
-    : [...defaultFooterLinks.quickLinks, ...defaultFooterLinks.getInvolved];
-
-  const socialLinks = siteSettings?.socialMediaLinks && siteSettings.socialMediaLinks.length > 0
-    ? siteSettings.socialMediaLinks.map(link => ({
-        icon: SiFacebook, // Default icon, could be enhanced to map icon names
-        href: link.url,
-        label: link.text,
-        color: 'text-[#1877F2]',
-        hoverColor: 'hover:text-[#0d5dbf]'
-      }))
-    : defaultSocialLinks;
+  const currentYear = new Date().getFullYear();
+  const appIdentifier = typeof window !== 'undefined' 
+    ? encodeURIComponent(window.location.hostname) 
+    : 'unknown-app';
 
   return (
-    <footer className="bg-gradient-to-br from-primary via-gradient-mid to-gradient-end text-primary-foreground">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {/* About Section */}
-          <div className="space-y-4">
-            <img
-              src={logoPath}
-              alt="Shunyatax Global Education Foundation"
-              className="h-16 w-auto drop-shadow-lg"
-            />
-            <p className="text-sm text-primary-foreground/75">
-              {aboutText}
+    <footer className="relative bg-gradient-to-br from-primary via-gradient-mid to-gradient-end text-primary-foreground overflow-hidden">
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-secondary/10 gradient-animate opacity-50" />
+      
+      {/* Subtle dot pattern */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{
+        backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)',
+        backgroundSize: '32px 32px'
+      }} />
+
+      <div className="container relative mx-auto px-4 py-16">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+          {/* Logo and About */}
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <Link to="/" className="inline-block group">
+              <img
+                src={logoPath}
+                alt={logoAlt}
+                className="h-20 w-auto drop-shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+              />
+            </Link>
+            <p className="text-sm leading-relaxed text-primary-foreground/90 drop-shadow-sm">
+              Together, we can make a difference. Supporting children, families, and communities through education and empowerment.
             </p>
-            <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className={`rounded-full bg-white p-2.5 transition-all duration-300 ${social.color} ${social.hoverColor} hover:scale-110 hover:shadow-lg hover:brightness-110`}
-                >
-                  <social.icon className="h-5 w-5" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h3 className="mb-4 text-lg font-bold text-black">Quick Links</h3>
-            <ul className="space-y-2">
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+            <h3 className="text-lg font-bold tracking-wide drop-shadow-md">Quick Links</h3>
+            <ul className="space-y-3">
               {defaultFooterLinks.quickLinks.map((link) => (
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="text-sm font-bold text-black transition-all duration-300 hover:opacity-70 hover:underline hover:underline-offset-4"
+                    className="group inline-flex items-center text-sm text-primary-foreground/90 transition-all duration-300 hover:text-accent-foreground hover:translate-x-2 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
                   >
+                    <span className="mr-2 h-1.5 w-1.5 rounded-full bg-accent-foreground opacity-0 transition-all duration-300 group-hover:opacity-100 shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
                     {link.name}
                   </Link>
                 </li>
@@ -127,15 +111,16 @@ export default function Footer() {
           </div>
 
           {/* Get Involved */}
-          <div>
-            <h3 className="mb-4 text-lg font-bold text-black">Get Involved</h3>
-            <ul className="space-y-2">
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+            <h3 className="text-lg font-bold tracking-wide drop-shadow-md">Get Involved</h3>
+            <ul className="space-y-3">
               {defaultFooterLinks.getInvolved.map((link) => (
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="text-sm font-bold text-black transition-all duration-300 hover:opacity-70 hover:underline hover:underline-offset-4"
+                    className="group inline-flex items-center text-sm text-primary-foreground/90 transition-all duration-300 hover:text-accent-foreground hover:translate-x-2 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
                   >
+                    <span className="mr-2 h-1.5 w-1.5 rounded-full bg-accent-foreground opacity-0 transition-all duration-300 group-hover:opacity-100 shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
                     {link.name}
                   </Link>
                 </li>
@@ -144,44 +129,69 @@ export default function Footer() {
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h3 className="mb-4 text-lg font-bold text-black">Contact Us</h3>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2 font-bold text-black transition-all duration-300 hover:opacity-70">
-                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+            <h3 className="text-lg font-bold tracking-wide drop-shadow-md">Contact Us</h3>
+            <ul className="space-y-4">
+              <li className="group flex items-start gap-3 text-sm text-primary-foreground/90 transition-all duration-300 hover:text-accent-foreground">
+                <Mail className="mt-0.5 h-5 w-5 flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
+                <a href="mailto:info@shunyataxglobal.org" className="hover:underline">
+                  info@shunyataxglobal.org
+                </a>
+              </li>
+              <li className="group flex items-start gap-3 text-sm text-primary-foreground/90 transition-all duration-300 hover:text-accent-foreground">
+                <Phone className="mt-0.5 h-5 w-5 flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
+                <a href="tel:+919461514198" className="hover:underline">
+                  +91 94615 14198
+                </a>
+              </li>
+              <li className="group flex items-start gap-3 text-sm text-primary-foreground/90 transition-all duration-300 hover:text-accent-foreground">
+                <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
                 <a 
                   href="https://maps.app.goo.gl/ou9xPw6VEjBm6nu77" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:underline"
                 >
-                  View Location on Map
-                </a>
-              </li>
-              <li className="flex items-center gap-2 font-bold text-black transition-all duration-300 hover:opacity-70">
-                <Phone className="h-4 w-4 flex-shrink-0" />
-                <a href="tel:+919461514198" className="hover:underline">
-                  +91 94615 14198
-                </a>
-              </li>
-              <li className="flex items-center gap-2 font-bold text-black transition-all duration-300 hover:opacity-70">
-                <Mail className="h-4 w-4 flex-shrink-0" />
-                <a href="mailto:info@shunyataxglobal.org" className="hover:underline">
-                  info@shunyataxglobal.org
+                  View on Map
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 border-t border-primary-foreground/10 pt-8 text-center text-sm text-primary-foreground/60">
-          <p className="flex items-center justify-center gap-1">
-            © 2026. Built with <Heart className="h-4 w-4 fill-accent text-accent" /> using{' '}
+        {/* Social Media Links */}
+        <div className="mt-12 border-t border-primary-foreground/10 pt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-400">
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            {defaultSocialLinks.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`group relative ${social.color} ${social.hoverColor} transition-all duration-300 hover:scale-125 hover:drop-shadow-[0_0_12px_currentColor]`}
+                aria-label={social.label}
+              >
+                <social.icon className="h-7 w-7 transition-transform duration-300 group-hover:rotate-12" />
+                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-background/90 px-2 py-1 text-xs text-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100 shadow-lg">
+                  {social.label}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Copyright and Attribution */}
+        <div className="mt-8 border-t border-primary-foreground/10 pt-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
+          <p className="text-sm text-primary-foreground/80 drop-shadow-sm">
+            © {currentYear} Shunyatax Global Education Foundation. All rights reserved.
+          </p>
+          <p className="mt-2 text-sm text-primary-foreground/70 drop-shadow-sm">
+            Built with <Heart className="inline h-4 w-4 text-red-500 animate-pulse" /> using{' '}
             <a
-              href="https://caffeine.ai"
+              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appIdentifier}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-accent-foreground transition-colors hover:text-accent"
+              className="font-semibold text-accent-foreground hover:underline transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
             >
               caffeine.ai
             </a>
